@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdint.h>
-#include "aatypes.h"
 #include "vec2.h"
 #include "vec3.h"
 #include "vec4.h"
@@ -16,20 +15,21 @@
     x   operators
 
     x   cross, perpendicular (2D)
-        distance
-        distance squared
+    x   distance
+    x   distance squared
     x   dot
-        length
-        length squared
-        normalize
-        reflect
-        refract
-        scalar triple product
-        vector triple product
+    x   length
+    x   length squared
+    x   normalize
+    x   reflect
+    x   refract
+    x   scalar triple product
+    x   vector triple product
 
-        zero
+    x   IsZero
+    x   IsUnit
 
-        statics (x, y, z axes; w; origin (0, 0, 0, 0))
+    x   statics (x, y, z axes; w; origin (0, 0, 0, 0))
 
     Matrices:
         mat3, mat4
@@ -87,8 +87,20 @@
         ditance
         closest points
 
+    Triangles:
+        point in triangle
+        barycentric coords
+        triangle-triangle intersection
+        triangle-ray intersection
+
+    Planes:
+        transform
+        distance
+        closest point
+        plane test
+
     Common:
-        constants (pi, tau/2pi, halfpi, epsilon etc)
+    x   constants (pi, tau/2pi, halfpi, epsilon etc)    NOTE: currently using math.h with Tau and Epsilon added
         
         abs
         ceil
@@ -100,8 +112,14 @@
         round
         lerp
 
+    Collision:
+        AABB
+        OBB
+        Bounding spheres
+        Capsules
+
     SIMD optimisations?
-    Self-implemented cstdlib functions?
+    Self-implemented standard library functions (cos, sin etc)?
 
 */
 
@@ -146,6 +164,11 @@ int main(int argv, char **argc)
     y = 2 * y;
     y *= 2;
     y += x;
+    y == x;
+
+    printf("sqrt 9: %f\n", Sqrt(9.f));
+    printf("inv sqrt 9: %f\n", InvSqrt(9.f));
 
     return 0;
 }
+

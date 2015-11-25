@@ -9,6 +9,8 @@ typedef uint16_t u16;
 typedef int32_t i32;
 typedef uint32_t u32;
 typedef float r32;
+typedef int32_t b32;
 
 #define AATYPES_H
 #endif
+
