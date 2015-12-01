@@ -36,12 +36,52 @@ inline v2 operator+(const v2 &a, const v2 &b)
     return result;
 }
 
+inline v2 operator+(const v2 &a, const r32 &b)
+{
+    v2 result;
+
+    result.x = a.x + b;
+    result.y = a.y + b;
+
+    return result;
+}
+
+inline v2 operator+(const r32 &b, const v2 &a)
+{
+    v2 result;
+
+    result.x = a.x + b;
+    result.y = a.y + b;
+
+    return result;
+}
+
 inline v2 operator-(const v2 &a, const v2 &b)
 {
     v2 result;
 
     result.x = a.x - b.x;
     result.y = a.y - b.y;
+
+    return result;
+}
+
+inline v2 operator-(const v2 &a, const r32 &b)
+{
+    v2 result;
+
+    result.x = a.x - b;
+    result.y = a.y - b;
+
+    return result;
+}
+
+inline v2 operator-(const r32 &b, const v2 &a)
+{
+    v2 result;
+
+    result.x = a.x - b;
+    result.y = a.y - b;
 
     return result;
 }
@@ -58,14 +98,45 @@ inline v2 operator*(const v2 &a, r32 b)
 
 inline v2 operator*(r32 a, const v2 &b)
 {
-    v2 result = b * a;
+    v2 result;
+
+    result.x = b.x * a;
+    result.y = b.y * a;
 
     return result;
 }
 
-inline v2 &operator*=(v2 &a, r32 b)
+inline v2 operator/(const v2 &a, r32 b)
+{
+    v2 result;
+
+    result.x = a.x / b;
+    result.y = a.y / b;
+
+    return result;
+}
+
+inline v2 operator/(r32 a, const v2 &b)
+{
+    v2 result;
+
+    result.x = b.x / a;
+    result.y = b.y / a;
+
+    return result;
+}
+
+
+inline v2 &operator*=(v2 &a, const r32 &b)
 {
     a = a * b;
+
+    return a;
+}
+
+inline v2 &operator/=(v2 &a, const r32 &b)
+{
+    a = a / b;
 
     return a;
 }
@@ -116,6 +187,11 @@ inline r32 Distance(const v2 &a, const v2 &b)
 inline r32 Dot(const v2 &a, const v2 &b)
 {
     return (a.x * b.x + a.y * b.y);
+}
+
+inline v2 Hadamard(const v2 &a, const v2 &b)
+{
+    return {a.x * b.x, a.y * b.y};
 }
 
 inline r32 LengthSq(const v2 &v)

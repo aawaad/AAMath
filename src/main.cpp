@@ -3,6 +3,8 @@
 #include "vec2.h"
 #include "vec3.h"
 #include "vec4.h"
+#include "mat3.h"
+#include "mat4.h"
 
 /*
     TODO:
@@ -18,6 +20,7 @@
     x   distance
     x   distance squared
     x   dot
+    x   hadamard product
     x   length
     x   length squared
     x   normalize
@@ -32,15 +35,16 @@
     x   statics (x, y, z axes; w; origin (0, 0, 0, 0))
 
     Matrices:
-        mat3, mat4
+    x   mat3, mat4
         mat3i, mat4i
 
-        operators
+    x   operators
 
-        component-wise multiply
+        adjoint
         determinant
-        identity
+    x   identity
         inverse
+        hadamard product
         transpose
 
         translation

@@ -20,11 +20,11 @@ union v4
 // NOTE: Static constants
 //
 
-static const v4 XAXIS4 = {1.0f, 0.0f, 0.0f, 0.0f};
-static const v4 YAXIS4 = {0.0f, 1.0f, 0.0f, 0.0f};
-static const v4 ZAXIS4 = {0.0f, 0.0f, 1.0f, 0.0f};
-static const v4 WAXIS4 = {0.0f, 0.0f, 0.0f, 1.0f};
-static const v4 ORIGIN4 = {0.0f, 0.0f, 0.0f, 0.0f};
+static const v4 VEC4_XAXIS = {1.0f, 0.0f, 0.0f, 0.0f};
+static const v4 VEC4_YAXIS = {0.0f, 1.0f, 0.0f, 0.0f};
+static const v4 VEC4_ZAXIS = {0.0f, 0.0f, 1.0f, 0.0f};
+static const v4 VEC4_WAXIS = {0.0f, 0.0f, 0.0f, 1.0f};
+static const v4 VEC4_ORIGIN = {0.0f, 0.0f, 0.0f, 0.0f};
 
 //
 // NOTE: Operators
@@ -54,6 +54,30 @@ inline v4 operator+(const v4 &a, const v4 &b)
     return result;
 }
 
+inline v4 operator+(const v4 &a, const r32 &b)
+{
+    v4 result;
+
+    result.x = a.x + b;
+    result.y = a.y + b;
+    result.z = a.z + b;
+    result.w = a.w + b;
+
+    return result;
+}
+
+inline v4 operator+(const r32 &b, const v4 &a)
+{
+    v4 result;
+
+    result.x = a.x + b;
+    result.y = a.y + b;
+    result.z = a.z + b;
+    result.w = a.w + b;
+
+    return result;
+}
+
 inline v4 operator-(const v4 &a, const v4 &b)
 {
     v4 result;
@@ -62,6 +86,30 @@ inline v4 operator-(const v4 &a, const v4 &b)
     result.y = a.y - b.y;
     result.z = a.z - b.z;
     result.w = a.w - b.w;
+
+    return result;
+}
+
+inline v4 operator-(const v4 &a, const r32 &b)
+{
+    v4 result;
+
+    result.x = a.x - b;
+    result.y = a.y - b;
+    result.z = a.z - b;
+    result.w = a.w - b;
+
+    return result;
+}
+
+inline v4 operator-(const r32 &b, const v4 &a)
+{
+    v4 result;
+
+    result.x = a.x - b;
+    result.y = a.y - b;
+    result.z = a.z - b;
+    result.w = a.w - b;
 
     return result;
 }
@@ -85,9 +133,39 @@ inline v4 operator*(r32 a, const v4 &b)
     return result;
 }
 
-inline v4 &operator*=(v4 &a, r32 b)
+inline v4 operator/(const v4 &a, r32 b)
+{
+    v4 result;
+
+    result.x = a.x / b;
+    result.y = a.y / b;
+    result.z = a.z / b;
+
+    return result;
+}
+
+inline v4 operator/(r32 a, const v4 &b)
+{
+    v4 result;
+
+    result.x = b.x / a;
+    result.y = b.y / a;
+    result.z = b.z / a;
+
+    return result;
+}
+
+
+inline v4 &operator*=(v4 &a, const r32 &b)
 {
     a = a * b;
+
+    return a;
+}
+
+inline v4 &operator/=(v4 &a, const r32 &b)
+{
+    a = a / b;
 
     return a;
 }
@@ -99,7 +177,21 @@ inline v4 &operator+=(v4 &a, const v4 &b)
     return a;
 }
 
+inline v4 &operator+=(v4 &a, const r32 &b)
+{
+    a = a + b;
+
+    return a;
+}
+
 inline v4 &operator-=(v4 &a, const v4 &b)
+{
+    a = a - b;
+
+    return a;
+}
+
+inline v4 &operator-=(v4 &a, const r32 &b)
 {
     a = a - b;
 
@@ -153,6 +245,11 @@ inline r32 Distance(const v4 &a, const v4 &b)
 inline r32 Dot(const v4 &a, const v4 &b)
 {
     return (a.x * b.x + a.y * b.y + a.z * b.z);
+}
+
+inline v4 Hadamard(const v4 &a, const v4 &b)
+{
+    return {a.x * b.x, a.y * b.y, a.z * b.z, a.w * a.w};
 }
 
 inline r32 LengthSq(const v4 &a)
