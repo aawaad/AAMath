@@ -7,7 +7,7 @@
 #include "mat4.h"
 
 /*
-    TODO:
+    TODO: x = done, \ = partial, ? = consider
 
     Vectors:
     x   v2, v3, v4    (float)  
@@ -40,20 +40,25 @@
 
     x   operators
 
-        adjoint
-        determinant
+    x   adjoint
+    x   determinant
     x   identity
-        inverse
-        hadamard product
-        transpose
-
-        translation
-        rotation (matrix)
+    x   inverse
+    x   hadamard product
+    x   transpose
+        
+        set:
+    ?   translation     NOTE: this probably isn't necessary with unions (e.g. mat.t.xyz = vec3 / mat.t = vec4)
         rotation (quaternion)
-        rotation (pitch, yaw, roll)
-        rotation (axis, angle)
-        rotation (x, y, z separate)
-        scale
+    \   rotation (pitch, yaw, roll)
+    \   rotation (axis, angle)
+    \   rotation (x, y, z separate)
+    \   scale
+
+        get:
+    \   to euler angles
+    \   to axis angle
+        to quaternion
 
     Quaternions:
         magnitude

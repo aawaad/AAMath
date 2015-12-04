@@ -1,6 +1,7 @@
 #ifndef MAT3_H
 #define MAT3_H
 
+#include "aamath.h"
 #include "vec3.h"
 
 union mat3
@@ -367,6 +368,166 @@ inline mat3 Hadamard(const mat3 &a, const mat3 &b)
     result.z = Hadamard(a.z, b.z);
 
     return result;
+}
+
+// NOTE: Rotation by Euler (x, y, z)
+void SetRotation(mat3 &m, const r32 x, const r32 y, const r32 z)
+{
+    r32 sx, cx;
+    SinCos(x, sx, cx);
+
+    r32 sy, cy;
+    SinCos(y, sy, cy);
+
+    r32 sz, cz;
+    SinCos(z, sz, cz);
+
+    m.xx = cy * cz;
+    m.xy = -(cy * sz);
+    m.xz = sy;
+    m.yx = (sx * sy * cz) + (cx * sz);
+    m.yy = -(sx * sy * sz) + (cx * cz);
+    m.yz = -(sx * cy);
+    m.zx = -(cx * sy * cz) + (sx * sz);
+    m.zy = (cx * sy * sz) + (sx * cz);
+    m.zz = cx * cy;
+}
+
+// NOTE: Proxy for above
+inline void SetRotation(mat3 &m, const v3 &v)
+{
+    SetRotation(m, v.x, v.y, v.z);
+}
+
+// NOTE: Axis angle rotation
+void SetRotation(mat3 &m, v3 v, r32 a)
+{
+    r32 s, c, t;
+    SinCos(a, s, c);
+    t = 1.0f - c;
+
+    Normalize(v);
+
+    r32 tx = t * v.x, ty = t * v.y, tz = t * v.z,
+        sx = s * v.x, sy = s * v.y, sz = s * v.z,
+        txy = tx * v.y, tyz = tx * v.z, txz = tx * v.z;
+
+    m.xx = tx * v.x + c;
+    m.xy = txy - sz;
+    m.xz = txz + sy;
+    m.yx = txy + sz;
+    m.yy = ty * v.y + c;
+    m.yz = tyz - sx;
+    m.zx = txz - sy;
+    m.zy = tyz + sx;
+    m.zz = tz * v.z + c;
+}
+
+// TODO: Quaternion goes here
+//
+
+inline void SetRotationX(mat3 &m, const r32 a)
+{
+    r32 s, c;
+    SinCos(a, s, c);
+
+    m.x = {1.0f, 0.0f, 0.0f};
+    m.y = {0.0f, c, -s};
+    m.z = {0.0f, s, c};
+}
+
+inline void SetRotationY(mat3 &m, const r32 a)
+{
+    r32 s, c;
+    SinCos(a, s, c);
+
+    m.x = {c, 0.0f, s};
+    m.y = {0.0f, 1.0f, 0.0f};
+    m.z = {-s, 0.0f, c};
+}
+
+inline void SetRotationZ(mat3 &m, const r32 a)
+{
+    r32 s, c;
+    SinCos(a, s, c);
+
+    m.x = {c, -s, 0.0f};
+    m.y = {s, c, 0.0f};
+    m.z = {0.0f, 0.0f, 1.0f};
+}
+
+inline void SetScale(mat3 &m, const r32 x, const r32 y, const r32 z)
+{
+    m.x = {x, 0.0f, 0.0f};
+    m.y = {0.0f, y, 0.0f};
+    m.z = {0.0f, 0.0f, z};
+}
+
+inline void SetScale(mat3 &m, const v3 &v)
+{
+    SetScale(m, v.x, v.y, v.z);
+}
+
+// NOTE: See Mike Day, Extracting Euler Angles from a Rotation Matrix
+// https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/07/euler-angles1.pdf}
+v3 GetEulerAngles(const mat3 &m)
+{
+    v3 result;
+
+    result.x = atan2(m.yz, m.zz);
+    r32 c2 = Sqrt((m.xx * m.xx) + (m.xy * m.xy));
+    result.y = atan2(-m.xz, c2);
+    r32 s, c;
+    SinCos(result.x, s, c);
+    result.z = atan2((s * m.zx) - (c * m.yx), (c * m.yy) - (s * m.zy));
+
+    return result;
+}
+
+void GetAxisAngle(const mat3 &m, v3 &axis, r32 &angle)
+{
+    r32 trace = m.xx + m.yy + m.zz;
+    angle = acos(0.5f * (trace - 1.0f));
+
+    if(IsZero(angle))
+    {
+        // NOTE: Could be anything if angle is zero, so return the up/Y axis
+        axis = VEC3_YAXIS;
+    }
+    else if(angle < PI - EPSILON)
+    {
+        axis = {m.zy - m.yz, m.xz - m.zx, m.yx - m.xy};
+        Normalize(axis);
+    }
+    else
+    {
+        r32 sqrt, oneOverSqrt;
+
+        if(m.xx > m.yy && m.xx > m.zz)
+        {
+            sqrt = Sqrt(m.xx - m.yy - m.zz + 1.0f);
+            axis.x = 0.5f * sqrt;
+            oneOverSqrt = 1.0f / sqrt;
+            axis.y = m.xy * oneOverSqrt;
+            axis.z = m.xz * oneOverSqrt;
+        }
+        else if(m.yy > m.zz)
+        {
+            sqrt = Sqrt(m.yy - m.xx - m.zz + 1.0f);
+            axis.y = 0.5f * sqrt;
+            oneOverSqrt = 1.0f / sqrt;
+            axis.x = m.xy * oneOverSqrt;
+            axis.z = m.yz * oneOverSqrt;
+        }
+        else
+        {
+            sqrt = Sqrt(m.zz - m.xx - m.yy + 1.0f);
+            axis.z = 0.5f * sqrt;
+            oneOverSqrt = 1.0f / sqrt;
+            axis.x = m.xz * oneOverSqrt;
+            axis.y = m.yz * oneOverSqrt;
+        }
+    }
 }
 
 #endif

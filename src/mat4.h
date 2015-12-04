@@ -393,6 +393,7 @@ inline r32 Determinant(const mat4 &m)
           + m.xz * (m.yx * m.zy - m.yy * m.zx));
 }
 
+// NOTE: Get matrix's upper 3x3 matrix (rotation + scaling)
 inline mat3 Upper3x3(const mat4 &m)
 {
     mat3 result;

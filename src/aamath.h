@@ -4,9 +4,14 @@
 #include "aatypes.h"
 #include <math.h>
 
-#define EPSILON 1.0e-6f
-#define TWOPI   6.2831853071795864769252867665590f
-#define TAU     6.2831853071795864769252867665590f
+#define EPSILON         1.0e-6f
+#define PI              3.14159265358979323846264338327950288f
+#define HALFPI          1.57079632679489661923132169163975144f
+#define TWOPI           6.28318530717958647692528676655900576f
+#define TAU             6.28318530717958647692528676655900576f
+#define ONEOVERPI       0.318309886183790671537767526745028724f;
+#define ONEOVERTWOPI    0.159154943091895335768883763372514362f;
+#define ONEOVERTAU      0.159154943091895335768883763372514362f;
 
 #undef AAMATH_APPROXIMATE
 
@@ -16,7 +21,7 @@ union intfloat
     u32 u;
 };
 
-// see https://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Approximations_that_depend_on_the_floating_point_representation
+// NOTE: see https://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Approximations_that_depend_on_the_floating_point_representation
 inline r32 Sqrt(r32 x)
 {
 #if defined(AAMATH_APPROXIMATE)
@@ -30,7 +35,7 @@ inline r32 Sqrt(r32 x)
 #endif
 }
 
-// see http://rrrola.wz.cz/inv_sqrt.html - improved fast inv sqrt
+// NOTE: see http://rrrola.wz.cz/inv_sqrt.html - improved fast inv sqrt
 inline r32 InvSqrt(r32 x)
 {
 #if defined(AAMATH_APPROXIMATE)
@@ -50,16 +55,22 @@ inline r32 InvSqrt(r32 x)
 #endif
 }
 
-// check if two floats are relatively equal
+// NOTE: check if two floats are relatively equal
 inline b32 IsEqual(r32 a, r32 b, r32 epsilon = EPSILON)
 {
     return fabs(a - b) <= epsilon * (fabs(a) + fabs(b) + 1.0f);
 }
 
-// check if float is within epsilon of zero
+// NOTE: check if float is within epsilon of zero
 inline b32 IsZero(r32 x, r32 epsilon = EPSILON)
 {
     return fabs(x) <= epsilon;
+}
+
+inline void SinCos(r32 angle, r32 &a, r32 &b)
+{
+    a = sinf(angle);
+    b = cosf(angle);
 }
 
 #endif

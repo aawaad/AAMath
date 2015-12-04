@@ -1,6 +1,8 @@
 #ifndef VEC3_H
 #define VEC3_H
 
+#include "aamath.h"
+
 union v3
 {
     struct

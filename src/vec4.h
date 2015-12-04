@@ -1,6 +1,8 @@
 #ifndef VEC4_H
 #define VEC4_H
 
+#include "aamath.h"
+
 union v4
 {
     struct
