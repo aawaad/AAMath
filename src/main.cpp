@@ -5,6 +5,7 @@
 #include "vec4.h"
 #include "mat3.h"
 #include "mat4.h"
+#include "quat.h"
 
 /*
     TODO: x = done, \ = partial, ? = consider
@@ -49,34 +50,34 @@
         
         set:
     ?   translation     NOTE: this probably isn't necessary with unions (e.g. mat.t.xyz = vec3 / mat.t = vec4)
-        rotation (quaternion)
-    \   rotation (pitch, yaw, roll)
-    \   rotation (axis, angle)
-    \   rotation (x, y, z separate)
-    \   scale
+    x   rotation (quaternion)
+    x   rotation (pitch, yaw, roll)
+    x   rotation (axis, angle)
+    x   rotation (x, y, z separate)
+    x   scale
 
         get:
-    \   to euler angles
-    \   to axis angle
-        to quaternion
+    x   to euler angles
+    x   to axis angle
+    x   to quaternion
 
     Quaternions:
-        magnitude
-        norm
-        normalize
-        conjugate
-        inverse
+    x   magnitude
+    x   norm
+    x   normalize
+    x   conjugate
+    x   inverse
 
-        operators
+    x   operators
 
-        dot
-        rotate
-        lerp
-        slerp
-        approx slerp
+    x   dot
+    x   rotate
+    x   lerp
+    x   slerp
+    x   approx slerp
 
-        zero
-        identity
+    x   zero
+    x   identity
 
     Lines:
         line2, line3
@@ -109,11 +110,13 @@
         plane test
 
     Common:
-    x   constants (pi, tau/2pi, halfpi, epsilon etc)    NOTE: currently using math.h with Tau and Epsilon added
+    x   constants (pi, tau/2pi, halfpi, epsilon etc) 
         
         abs
         ceil
         floor
+    x   areequal
+    x   iszero
         isinf
         isnan
         min
@@ -150,32 +153,34 @@ int main(int argv, char **argc)
 
     v4 dim4 = {};
     dim4.xyz = dim3;
-    dim4.a = 0;
+    dim4.a = 0.0f;
 
-    v3 x = {1, 0, 0};
-    v3 y = {.707f, .707f, 0};
+    v3 x = {1.0f, 0.0f, 0.0f};
+    v3 y = {1.0f, 1.0f, 0.0f};
+    Normalize(y);
 
-    printf("dot: %3.f\n", Dot(x, y));
+    printf("dot: %.3f\n", Dot(x, y));
+    printf("dot: %.3f\n", Dot(VEC3_XAXIS, y));
 
     v2 dir2 = {1, 0};
     v2 dir2perp = Perpendicular(dir2);
 
-    printf("perp: %3.f, %3.f\n", dir2perp);
+    printf("perp: %3.f, %3.f\n", dir2perp.x, dir2perp.y);
 
-    y = {0, 1, 0};
+    y = {0.0f, 1.0f, 0.0f};
     v3 cross = Cross(x, y);
 
-    printf("cross: <%3.f, %3.f, %3.f>\n", cross.x, cross.y, cross.z);
+    printf("cross: <%.3f, %.3f, %.3f>\n", cross.x, cross.y, cross.z);
 
     y = y + x;
     y = y - x;
     y = -y;
-    y = 2 * y;
-    y *= 2;
+    y = 2.0f * y;
+    y *= 2.0f;
     y += x;
     y == x;
 
-    printf("sqrt 9: %f\n", Sqrt(9.f));
+    printf("sqrt 9: %f\n", AASqrt(9.f));
     printf("inv sqrt 9: %f\n", InvSqrt(9.f));
 
     return 0;

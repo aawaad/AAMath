@@ -2,7 +2,7 @@
 #define MAT3_H
 
 #include "aamath.h"
-#include "vec3.h"
+#include "quat.h"
 
 union mat3
 {
@@ -265,7 +265,7 @@ inline b32 operator==(const mat3 &a, const mat3 &b)
 {
     for(u32 i = 0; i < 9; ++i)
     {
-        if(!IsEqual(a.m[i], b.m[i]))
+        if(!AreEqual(a.m[i], b.m[i]))
             return false;
     }
 
@@ -370,7 +370,6 @@ inline mat3 Hadamard(const mat3 &a, const mat3 &b)
     return result;
 }
 
-// NOTE: Rotation by Euler (x, y, z)
 void SetRotation(mat3 &m, const r32 x, const r32 y, const r32 z)
 {
     r32 sx, cx;
@@ -393,13 +392,11 @@ void SetRotation(mat3 &m, const r32 x, const r32 y, const r32 z)
     m.zz = cx * cy;
 }
 
-// NOTE: Proxy for above
 inline void SetRotation(mat3 &m, const v3 &v)
 {
     SetRotation(m, v.x, v.y, v.z);
 }
 
-// NOTE: Axis angle rotation
 void SetRotation(mat3 &m, v3 v, r32 a)
 {
     r32 s, c, t;
@@ -423,8 +420,40 @@ void SetRotation(mat3 &m, v3 v, r32 a)
     m.zz = tz * v.z + c;
 }
 
-// TODO: Quaternion goes here
-//
+void SetRotation(mat3 &m, quat &q)
+{
+    // NOTE: Assert unit quaternion
+
+    r32 xs, ys, zs,
+        wx, wy, wz,
+        xx, xy, xz,
+        yy, yz, zz;
+
+    xs = q.x + q.x;
+    ys = q.y + q.y;
+    zs = q.z + q.z;
+    wx = q.w * xs;
+    wy = q.w * ys;
+    wz = q.w * zs;
+    xx = q.x * xs;
+    xy = q.x * ys;
+    xz = q.x * zs;
+    yy = q.y * ys;
+    yz = q.y * zs;
+    zz = q.z * zs;
+
+    m.xx = 1.0f - (yy + zz);
+    m.xy = xy - wz;
+    m.xz = xz + wy;
+
+    m.yx = xy + wz;
+    m.yy = 1.0f - (xx + zz);
+    m.yz = yz - wx;
+
+    m.zx = xz - wy;
+    m.zy = yz + wx;
+    m.zz = 1.0f - (xx + yy);
+}
 
 inline void SetRotationX(mat3 &m, const r32 a)
 {
@@ -474,12 +503,12 @@ v3 GetEulerAngles(const mat3 &m)
 {
     v3 result;
 
-    result.x = atan2(m.yz, m.zz);
-    r32 c2 = Sqrt((m.xx * m.xx) + (m.xy * m.xy));
-    result.y = atan2(-m.xz, c2);
+    result.x = atan2f(m.yz, m.zz);
+    r32 c2 = AASqrt((m.xx * m.xx) + (m.xy * m.xy));
+    result.y = atan2f(-m.xz, c2);
     r32 s, c;
     SinCos(result.x, s, c);
-    result.z = atan2((s * m.zx) - (c * m.yx), (c * m.yy) - (s * m.zy));
+    result.z = atan2f((s * m.zx) - (c * m.yx), (c * m.yy) - (s * m.zy));
 
     return result;
 }
@@ -487,7 +516,7 @@ v3 GetEulerAngles(const mat3 &m)
 void GetAxisAngle(const mat3 &m, v3 &axis, r32 &angle)
 {
     r32 trace = m.xx + m.yy + m.zz;
-    angle = acos(0.5f * (trace - 1.0f));
+    angle = acosf(0.5f * (trace - 1.0f));
 
     if(IsZero(angle))
     {
@@ -505,7 +534,7 @@ void GetAxisAngle(const mat3 &m, v3 &axis, r32 &angle)
 
         if(m.xx > m.yy && m.xx > m.zz)
         {
-            sqrt = Sqrt(m.xx - m.yy - m.zz + 1.0f);
+            sqrt = AASqrt(m.xx - m.yy - m.zz + 1.0f);
             axis.x = 0.5f * sqrt;
             oneOverSqrt = 1.0f / sqrt;
             axis.y = m.xy * oneOverSqrt;
@@ -513,7 +542,7 @@ void GetAxisAngle(const mat3 &m, v3 &axis, r32 &angle)
         }
         else if(m.yy > m.zz)
         {
-            sqrt = Sqrt(m.yy - m.xx - m.zz + 1.0f);
+            sqrt = AASqrt(m.yy - m.xx - m.zz + 1.0f);
             axis.y = 0.5f * sqrt;
             oneOverSqrt = 1.0f / sqrt;
             axis.x = m.xy * oneOverSqrt;
@@ -521,13 +550,54 @@ void GetAxisAngle(const mat3 &m, v3 &axis, r32 &angle)
         }
         else
         {
-            sqrt = Sqrt(m.zz - m.xx - m.yy + 1.0f);
+            sqrt = AASqrt(m.zz - m.xx - m.yy + 1.0f);
             axis.z = 0.5f * sqrt;
             oneOverSqrt = 1.0f / sqrt;
             axis.x = m.xz * oneOverSqrt;
             axis.y = m.yz * oneOverSqrt;
         }
     }
+}
+
+quat GetQuaternion(const mat3 &m)
+{
+    quat result;
+    r32 trace = 1.0f + m.xx + m.yy + m.zz;
+
+    if (trace > EPSILON)
+    {
+        r32 s = AASqrt(trace) * 2.0f;
+        result.w = s / 4.0f;
+        result.x = (m.zy - m.yz) / s;
+        result.y = (m.xz - m.zx) / s;
+        result.z = (m.yx - m.xy) / s;
+    }
+    else if (m.xx > m.yy && m.xx > m.zz)
+    {
+        r32 s = AASqrt(1.0f + m.xx - m.yy - m.zz) * 2.0f;
+        result.w = (m.zy - m.yz) / s;
+        result.x = s / 4.0f;
+        result.y = (m.yx + m.xy) / s;
+        result.z = (m.xz + m.zx) / s;
+    }
+    else if (m.yy > m.zz)
+    {
+        r32 s = AASqrt(1.0f + m.yy - m.xx - m.zz) * 2.0f;
+        result.w = (m.xz - m.zx) / s;
+        result.x = (m.yx + m.xy) / s;
+        result.y = s / 4.0f;
+        result.z = (m.zy + m.yz) / s;
+    }
+    else
+    {
+        r32 s = AASqrt(1.0f + m.zz - m.xx - m.yy) * 2.0f;
+        result.w = (m.yx - m.xy) / s;
+        result.x = (m.xz + m.zx) / s;
+        result.y = (m.zy + m.yz) / s;
+        result.z = s / 4.0f;
+    }
+
+    return result;
 }
 
 #endif

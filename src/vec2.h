@@ -157,14 +157,14 @@ inline v2 &operator-=(v2 &a, const v2 &b)
  
 inline b32 operator==(const v2 &a, const v2 &b)
 {
-    return (IsEqual(a.x, b.x)
-            && IsEqual(a.y, b.y));
+    return (AreEqual(a.x, b.x)
+            && AreEqual(a.y, b.y));
 }
  
 inline b32 operator!=(const v2 &a, const v2 &b)
 {
-    return !(IsEqual(a.x, b.x)
-            && IsEqual(a.y, b.y));
+    return !(AreEqual(a.x, b.x)
+            && AreEqual(a.y, b.y));
 }
 
 //
@@ -181,7 +181,7 @@ inline r32 DistanceSq(const v2 &a, const v2 &b)
 
 inline r32 Distance(const v2 &a, const v2 &b)
 {
-    return Sqrt(DistanceSq(a, b));
+    return AASqrt(DistanceSq(a, b));
 }
 
 inline r32 Dot(const v2 &a, const v2 &b)
@@ -201,7 +201,7 @@ inline r32 LengthSq(const v2 &v)
 
 inline r32 Length(const v2 &v)
 {
-    return Sqrt(LengthSq(v));
+    return AASqrt(LengthSq(v));
 }
 
 inline void Normalize(v2 &v)
@@ -229,7 +229,7 @@ inline v2 Refract(const v2 &v, const v2 &n, r32 idx)
     if (k < 0)
         return {0, 0};
     else
-        return idx * v - (idx * ndotv + Sqrt(k)) * n;
+        return idx * v - (idx * ndotv + AASqrt(k)) * n;
 }
 
 inline b32 IsZero(const v2 &v)

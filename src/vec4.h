@@ -139,9 +139,12 @@ inline v4 operator/(const v4 &a, r32 b)
 {
     v4 result;
 
-    result.x = a.x / b;
-    result.y = a.y / b;
-    result.z = a.z / b;
+    r32 oneOverB = 1.0f / b;
+
+    result.x = a.x * oneOverB;
+    result.y = a.y * oneOverB;
+    result.z = a.z * oneOverB;
+    result.w = a.w * oneOverB;
 
     return result;
 }
@@ -150,9 +153,12 @@ inline v4 operator/(r32 a, const v4 &b)
 {
     v4 result;
 
-    result.x = b.x / a;
-    result.y = b.y / a;
-    result.z = b.z / a;
+    r32 oneOverA = 1.0f / a;
+
+    result.x = b.x * oneOverA;
+    result.y = b.y * oneOverA;
+    result.z = b.z * oneOverA;
+    result.w = b.w * oneOverA;
 
     return result;
 }
@@ -202,18 +208,18 @@ inline v4 &operator-=(v4 &a, const r32 &b)
  
 inline b32 operator==(const v4 &a, const v4 &b)
 {
-    return (IsEqual(a.x, b.x)
-            && IsEqual(a.y, b.y)
-            && IsEqual(a.z, b.z)
-            && IsEqual(a.w, b.w));
+    return (AreEqual(a.x, b.x)
+            && AreEqual(a.y, b.y)
+            && AreEqual(a.z, b.z)
+            && AreEqual(a.w, b.w));
 }
  
 inline b32 operator!=(const v4 &a, const v4 &b)
 {
-    return !(IsEqual(a.x, b.x)
-            && IsEqual(a.y, b.y)
-            && IsEqual(a.z, b.z)
-            && IsEqual(a.w, b.w));
+    return !(AreEqual(a.x, b.x)
+            && AreEqual(a.y, b.y)
+            && AreEqual(a.z, b.z)
+            && AreEqual(a.w, b.w));
 }
 
 //
@@ -241,7 +247,7 @@ inline r32 DistanceSq(const v4 &a, const v4 &b)
 
 inline r32 Distance(const v4 &a, const v4 &b)
 {
-    return Sqrt(DistanceSq(a, b));
+    return AASqrt(DistanceSq(a, b));
 }
 
 inline r32 Dot(const v4 &a, const v4 &b)
@@ -261,7 +267,7 @@ inline r32 LengthSq(const v4 &a)
 
 inline r32 Length(const v4 &a)
 {
-    return Sqrt(LengthSq(a));
+    return AASqrt(LengthSq(a));
 }
 
 inline void Normalize(v4 &a)
@@ -285,7 +291,7 @@ inline v4 Refract(const v4 &v, const v4 &n, r32 idx)
     if (k < 0.0f)
         return {0.0f, 0.0f};
     else
-        return idx * v - (idx * ndotv + Sqrt(k)) * n;
+        return idx * v - (idx * ndotv + AASqrt(k)) * n;
 }
 
 // A . (B x C)

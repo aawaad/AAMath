@@ -132,9 +132,11 @@ inline v3 operator/(const v3 &a, r32 b)
 {
     v3 result;
 
-    result.x = a.x / b;
-    result.y = a.y / b;
-    result.z = a.z / b;
+    r32 oneOverB = 1.0f / b;
+
+    result.x = a.x * oneOverB;
+    result.y = a.y * oneOverB;
+    result.z = a.z * oneOverB;
 
     return result;
 }
@@ -143,9 +145,11 @@ inline v3 operator/(r32 a, const v3 &b)
 {
     v3 result;
 
-    result.x = b.x / a;
-    result.y = b.y / a;
-    result.z = b.z / a;
+    r32 oneOverA = 1.0f / a;
+
+    result.x = b.x * oneOverA;
+    result.y = b.y * oneOverA;
+    result.z = b.z * oneOverA;
 
     return result;
 }
@@ -195,16 +199,16 @@ inline v3 &operator-=(v3 &a, const r32 &b)
  
 inline b32 operator==(const v3 &a, const v3 &b)
 {
-    return (IsEqual(a.x, b.x)
-            && IsEqual(a.y, b.y)
-            && IsEqual(a.z, b.z));
+    return (AreEqual(a.x, b.x)
+            && AreEqual(a.y, b.y)
+            && AreEqual(a.z, b.z));
 }
  
 inline b32 operator!=(const v3 &a, const v3 &b)
 {
-    return !(IsEqual(a.x, b.x)
-            && IsEqual(a.y, b.y)
-            && IsEqual(a.z, b.z));
+    return !(AreEqual(a.x, b.x)
+            && AreEqual(a.y, b.y)
+            && AreEqual(a.z, b.z));
 }
 
 //
@@ -231,7 +235,7 @@ inline r32 DistanceSq(const v3 &a, const v3 &b)
 
 inline r32 Distance(const v3 &a, const v3 &b)
 {
-    return Sqrt(DistanceSq(a, b));
+    return AASqrt(DistanceSq(a, b));
 }
 
 inline r32 Dot(const v3 &a, const v3 &b)
@@ -251,7 +255,7 @@ inline r32 LengthSq(const v3 &v)
 
 inline r32 Length(const v3 &v)
 {
-    return Sqrt(LengthSq(v));
+    return AASqrt(LengthSq(v));
 }
 
 inline void Normalize(v3 &v)
@@ -275,7 +279,7 @@ inline v3 Refract(const v3 &v, const v3 &n, r32 idx)
     if (k < 0)
         return {0, 0};
     else
-        return idx * v - (idx * ndotv + Sqrt(k)) * n;
+        return idx * v - (idx * ndotv + AASqrt(k)) * n;
 }
 
 // A . (B x C)

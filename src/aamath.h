@@ -22,7 +22,7 @@ union intfloat
 };
 
 // NOTE: see https://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Approximations_that_depend_on_the_floating_point_representation
-inline r32 Sqrt(r32 x)
+inline r32 AASqrt(r32 x)
 {
 #if defined(AAMATH_APPROXIMATE)
     intfloat y = {x};
@@ -56,7 +56,7 @@ inline r32 InvSqrt(r32 x)
 }
 
 // NOTE: check if two floats are relatively equal
-inline b32 IsEqual(r32 a, r32 b, r32 epsilon = EPSILON)
+inline b32 AreEqual(r32 a, r32 b, r32 epsilon = EPSILON)
 {
     return fabs(a - b) <= epsilon * (fabs(a) + fabs(b) + 1.0f);
 }
