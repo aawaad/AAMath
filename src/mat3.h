@@ -460,9 +460,9 @@ inline void SetRotationX(mat3 &m, const r32 a)
     r32 s, c;
     SinCos(a, s, c);
 
-    m.x = {1.0f, 0.0f, 0.0f};
-    m.y = {0.0f, c, -s};
-    m.z = {0.0f, s, c};
+    m.x = V3(1.0f, 0.0f, 0.0f);
+    m.y = V3(0.0f, c, -s);
+    m.z = V3(0.0f, s, c);
 }
 
 inline void SetRotationY(mat3 &m, const r32 a)
@@ -470,9 +470,9 @@ inline void SetRotationY(mat3 &m, const r32 a)
     r32 s, c;
     SinCos(a, s, c);
 
-    m.x = {c, 0.0f, s};
-    m.y = {0.0f, 1.0f, 0.0f};
-    m.z = {-s, 0.0f, c};
+    m.x = V3(c, 0.0f, s);
+    m.y = V3(0.0f, 1.0f, 0.0f);
+    m.z = V3(-s, 0.0f, c);
 }
 
 inline void SetRotationZ(mat3 &m, const r32 a)
@@ -480,16 +480,16 @@ inline void SetRotationZ(mat3 &m, const r32 a)
     r32 s, c;
     SinCos(a, s, c);
 
-    m.x = {c, -s, 0.0f};
-    m.y = {s, c, 0.0f};
-    m.z = {0.0f, 0.0f, 1.0f};
+    m.x = V3(c, -s, 0.0f);
+    m.y = V3(s, c, 0.0f);
+    m.z = V3(0.0f, 0.0f, 1.0f);
 }
 
 inline void SetScale(mat3 &m, const r32 x, const r32 y, const r32 z)
 {
-    m.x = {x, 0.0f, 0.0f};
-    m.y = {0.0f, y, 0.0f};
-    m.z = {0.0f, 0.0f, z};
+    m.x = V3(x, 0.0f, 0.0f);
+    m.y = V3(0.0f, y, 0.0f);
+    m.z = V3(0.0f, 0.0f, z);
 }
 
 inline void SetScale(mat3 &m, const v3 &v)
@@ -525,7 +525,7 @@ void GetAxisAngle(const mat3 &m, v3 &axis, r32 &angle)
     }
     else if(angle < PI - EPSILON)
     {
-        axis = {m.zy - m.yz, m.xz - m.zx, m.yx - m.xy};
+        axis = V3(m.zy - m.yz, m.xz - m.zx, m.yx - m.xy);
         Normalize(axis);
     }
     else

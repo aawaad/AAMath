@@ -27,8 +27,9 @@
 *.out
 *.app
 
-# vim temp files
+# vim
 *.swp
+*.vim
 
 build/
 bin/

@@ -141,6 +141,28 @@ inline mat4 operator*(const r32 &b, const mat4 &a)
     return result;
 }
 
+inline v3 operator*(const mat4 &a, const v3 &b)
+{
+    v3 result;
+
+    result.x = a.xx * b.x + a.xy * b.y + a.xz * b.z;
+    result.y = a.yx * b.x + a.yy * b.y + a.yz * b.z;
+    result.z = a.zx * b.x + a.zy * b.y + a.zz * b.z;
+
+    return result;
+}
+
+inline v3 operator*(const v3 &a, const mat4 &b)
+{
+    v3 result;
+
+    result.x = a.x * b.xx + a.y * b.yx + a.z * b.zx;
+    result.y = a.x * b.xy + a.y * b.yy + a.z * b.zy;
+    result.z = a.x * b.xz + a.y * b.yz + a.z * b.zz;
+
+    return result;
+}
+
 // NOTE: row vector * matrix
 inline v4 operator*(const v4 &a, const mat4 &b)
 {
@@ -533,9 +555,9 @@ inline void SetRotationX(mat4 &m, const r32 a)
     r32 s, c;
     SinCos(a, s, c);
 
-    m.x = {1.0f, 0.0f, 0.0f};
-    m.y = {0.0f, c, -s};
-    m.z = {0.0f, s, c};
+    m.x.xyz = V3(1.0f, 0.0f, 0.0f);
+    m.y.xyz = V3(0.0f, c, -s);
+    m.z.xyz = V3(0.0f, s, c);
 }
 
 inline void SetRotationY(mat4 &m, const r32 a)
@@ -543,9 +565,9 @@ inline void SetRotationY(mat4 &m, const r32 a)
     r32 s, c;
     SinCos(a, s, c);
 
-    m.x = {c, 0.0f, s};
-    m.y = {0.0f, 1.0f, 0.0f};
-    m.z = {-s, 0.0f, c};
+    m.x.xyz = V3(c, 0.0f, s);
+    m.y.xyz = V3(0.0f, 1.0f, 0.0f);
+    m.z.xyz = V3(-s, 0.0f, c);
 }
 
 inline void SetRotationZ(mat4 &m, const r32 a)
@@ -553,21 +575,38 @@ inline void SetRotationZ(mat4 &m, const r32 a)
     r32 s, c;
     SinCos(a, s, c);
 
-    m.x = {c, -s, 0.0f};
-    m.y = {s, c, 0.0f};
-    m.z = {0.0f, 0.0f, 1.0f};
+    m.x.xyz = V3(c, -s, 0.0f);
+    m.y.xyz = V3(s, c, 0.0f);
+    m.z.xyz = V3(0.0f, 0.0f, 1.0f);
 }
 
 inline void SetScale(mat4 &m, const r32 x, const r32 y, const r32 z)
 {
-    m.x = {x, 0.0f, 0.0f};
-    m.y = {0.0f, y, 0.0f};
-    m.z = {0.0f, 0.0f, z};
+    m.x.xyz = V3(x, 0.0f, 0.0f);
+    m.y.xyz = V3(0.0f, y, 0.0f);
+    m.z.xyz = V3(0.0f, 0.0f, z);
 }
 
 inline void SetScale(mat4 &m, const v3 &v)
 {
     SetScale(m, v.x, v.y, v.z);
+}
+
+inline mat4 Mat4Scaling(const r32 x, const r32 y, const r32 z)
+{
+    mat4 result;
+
+    result.x = V4(x, 0.0f, 0.0f, 0.0f);
+    result.y = V4(0.0f, y, 0.0f, 0.0f);
+    result.z = V4(0.0f, 0.0f, z, 0.0f);
+    result.t = V4(0.0f, 0.0f, 0.0f, 1.0f);
+
+    return result;
+}
+
+inline mat4 Mat4Scaling(const v3 v)
+{
+    return Mat4Scaling(v.x, v.y, v.z);
 }
 
 // NOTE: See Mike Day, Extracting Euler Angles from a Rotation Matrix
@@ -598,7 +637,7 @@ void GetAxisAngle(const mat4 &m, v3 &axis, r32 &angle)
     }
     else if(angle < PI - EPSILON)
     {
-        axis = {m.zy - m.yz, m.xz - m.zx, m.yx - m.xy};
+        axis = V3(m.zy - m.yz, m.xz - m.zx, m.yx - m.xy);
         Normalize(axis);
     }
     else
@@ -669,6 +708,53 @@ quat GetQuaternion(const mat4 &m)
         result.y = (m.zy + m.yz) / s;
         result.z = s / 4.0f;
     }
+
+    return result;
+}
+
+// NOTE: Left-handed
+mat4 PerspectiveFOV(r32 fov, r32 aspect, r32 nearDist, r32 farDist)
+{
+    mat4 result = MAT4_IDENTITY;
+
+    if (fov <= 0 || aspect == 0)
+    {
+        // NOTE: Assert
+        result = MAT4_IDENTITY;
+    }
+    else
+    {
+        r32 depth = farDist - nearDist;
+        r32 oneOverDepth = 1.0f / depth;
+
+        result.yy = 1.0f / tanf(0.5f * fov);
+        result.xx = result.yy / aspect;
+        result.zz = farDist * oneOverDepth;
+        result.tz = (-farDist * nearDist) * oneOverDepth;
+        result.zw = 1.0f;
+        result.w = 0;
+    }
+
+    return result;
+}
+
+// NOTE: Left-handed
+mat4 LookAt(v3 eye, v3 at, v3 up)
+{
+    mat4 result;
+
+    v3 z = Normalize(at - eye);
+    v3 x = Normalize(Cross(up, z));
+    v3 y = Cross(z, x);
+/*
+    result.x = V4(x.x, y.x, z.x, 0);
+    result.y = V4(x.y, y.y, z.y, 0);
+    result.z = V4(x.z, y.z, z.z, 0);
+    */
+    result.x = V4(x, 0);
+    result.y = V4(y, 0);
+    result.z = V4(z, 0);
+    result.t = V4(Dot(x, -eye), Dot(y, -eye), Dot(z, -eye), 1.0f);
 
     return result;
 }

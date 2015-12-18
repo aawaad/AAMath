@@ -1,19 +1,14 @@
 #include <stdio.h>
 #include <stdint.h>
-#include "vec2.h"
-#include "vec3.h"
-#include "vec4.h"
-#include "mat3.h"
-#include "mat4.h"
-#include "quat.h"
+#include "aamath.h"
 
 /*
     TODO: x = done, \ = partial, ? = consider
 
     Vectors:
     x   v2, v3, v4    (float)  
-        v2i, v3i, v4i (int)
-        v2u, v3u, v4u (uint)
+    x   v2s, v3s, v4s (int)
+    x   v2u, v3u, v4u (uint)
 
     x   operators
 
@@ -37,7 +32,7 @@
 
     Matrices:
     x   mat3, mat4
-        mat3i, mat4i
+   ?    mat3i, mat4i
 
     x   operators
 
@@ -49,12 +44,15 @@
     x   transpose
         
         set:
-    ?   translation     NOTE: this probably isn't necessary with unions (e.g. mat.t.xyz = vec3 / mat.t = vec4)
+   ?    translation     NOTE: this probably isn't necessary with unions (e.g. mat.t.xyz = vec3 / mat.t = vec4)
     x   rotation (quaternion)
     x   rotation (pitch, yaw, roll)
     x   rotation (axis, angle)
     x   rotation (x, y, z separate)
     x   scale
+
+        perspective projection
+        orthogonal
 
         get:
     x   to euler angles

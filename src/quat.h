@@ -18,6 +18,28 @@ union quat
     r32 E[4];
 };
 
+inline quat QUAT(r32 w, r32 x, r32 y, r32 z)
+{
+    quat result;
+
+    result.w = w;
+    result.x = x;
+    result.y = y;
+    result.z = z;
+
+    return result;
+}
+
+inline quat QUAT(r32 w, v3 v)
+{
+    quat result;
+
+    result.w = w;
+    result.xyz = v;
+
+    return result;
+}
+
 //
 // NOTE: Static constants
 //
@@ -235,11 +257,11 @@ inline void Set(quat &q, const v3 &from, const v3 &to)
     {
         if (from.z * from.z > from.x * from.x)
         {
-            q = {0.0f, 0.0f, from.z, -from.y};
+            q = QUAT(0.0f, 0.0f, from.z, -from.y);
         }
         else
         {
-            q = {0.0f, from.y, -from.x, 0.0f};
+            q = QUAT(0.0f, from.y, -from.x, 0.0f);
         }
     }
 
