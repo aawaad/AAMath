@@ -464,8 +464,8 @@ inline void SetRotationX(mat3 &m, const r32 a)
     SinCos(a, s, c);
 
     m.x = VEC3(1.0f, 0.0f, 0.0f);
-    m.y = VEC3(0.0f, c, -s);
-    m.z = VEC3(0.0f, s, c);
+    m.y = VEC3(0.0f, c, s);
+    m.z = VEC3(0.0f, -s, c);
 }
 
 inline void SetRotationY(mat3 &m, const r32 a)
@@ -483,8 +483,8 @@ inline void SetRotationZ(mat3 &m, const r32 a)
     r32 s, c;
     SinCos(a, s, c);
 
-    m.x = VEC3(c, -s, 0.0f);
-    m.y = VEC3(s, c, 0.0f);
+    m.x = VEC3(c, s, 0.0f);
+    m.y = VEC3(-s, c, 0.0f);
     m.z = VEC3(0.0f, 0.0f, 1.0f);
 }
 

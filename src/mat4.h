@@ -578,8 +578,8 @@ inline void SetRotationX(mat4 &m, const r32 a)
     SinCos(a, s, c);
 
     m.x.xyz = VEC3(1.0f, 0.0f, 0.0f);
-    m.y.xyz = VEC3(0.0f, c, -s);
-    m.z.xyz = VEC3(0.0f, s, c);
+    m.y.xyz = VEC3(0.0f, c, s);
+    m.z.xyz = VEC3(0.0f, -s, c);
 }
 
 inline void SetRotationY(mat4 &m, const r32 a)
@@ -597,8 +597,8 @@ inline void SetRotationZ(mat4 &m, const r32 a)
     r32 s, c;
     SinCos(a, s, c);
 
-    m.x.xyz = VEC3(c, -s, 0.0f);
-    m.y.xyz = VEC3(s, c, 0.0f);
+    m.x.xyz = VEC3(c, s, 0.0f);
+    m.y.xyz = VEC3(-s, c, 0.0f);
     m.z.xyz = VEC3(0.0f, 0.0f, 1.0f);
 }
 
@@ -622,7 +622,8 @@ inline void SetScale(mat4 &m, const vec4 &v)
 // NOTE: Rotation by Euler (XYZ)
 mat4 Mat4Rotation(const r32 x, const r32 y, const r32 z)
 {
-    mat4 result = MAT4_IDENTITY;
+    mat4 result = {};
+    result.w = 1.0f;
 
     r32 sx, cx;
     SinCos(x, sx, cx);
@@ -649,7 +650,8 @@ mat4 Mat4Rotation(const r32 x, const r32 y, const r32 z)
 // NOTE: Rotation by Euler (YXZ (y-up) / Rotation Pitch Yaw)
 mat4 Mat4RotationRPY(const r32 x, const r32 y, const r32 z)
 {
-    mat4 result = MAT4_IDENTITY;
+    mat4 result = {};
+    result.w = 1.0f;
 
     r32 sx, cx;
     SinCos(x, sx, cx);
@@ -690,7 +692,8 @@ inline mat4 Mat4Rotation(const vec4 &v)
 // NOTE: Axis angle rotation
 mat4 Mat4Rotation(vec4 v, r32 a)
 {
-    mat4 result = MAT4_IDENTITY;
+    mat4 result = {};
+    result.w = 1.0f;
 
     r32 s, c, t;
     SinCos(a, s, c);
@@ -718,7 +721,8 @@ mat4 Mat4Rotation(vec4 v, r32 a)
 mat4 Mat4Rotation(quat &q)
 {
     // NOTE: Assert unit quaternion
-    mat4 result = MAT4_IDENTITY;
+    mat4 result = {};
+    result.w = 1.0f;
 
     r32 xs, ys, zs,
         wx, wy, wz,
@@ -757,27 +761,29 @@ mat4 Mat4Rotation(quat &q)
 
 inline mat4 Mat4RotationX(const r32 a)
 {
-    mat4 result = MAT4_IDENTITY;
+    mat4 result = {};
+    result.w = 1.0f;
 
     r32 s, c;
     SinCos(a, s, c);
 
-    result.x.xyz = VEC3(1.0f, 0.0f, 0.0f);
-    result.y.xyz = VEC3(0.0f, c, -s);
-    result.z.xyz = VEC3(0.0f, s, c);
+    result.xx = 1.0f;
+    result.y.xyz = VEC3(0.0f, c, s);
+    result.z.xyz = VEC3(0.0f, -s, c);
 
     return result;
 }
 
 inline mat4 Mat4RotationY(const r32 a)
 {
-    mat4 result = MAT4_IDENTITY;
+    mat4 result = {};
+    result.w = 1.0f;
 
     r32 s, c;
     SinCos(a, s, c);
 
     result.x.xyz = VEC3(c, 0.0f, s);
-    result.y.xyz = VEC3(0.0f, 1.0f, 0.0f);
+    result.yy = 1.0f;
     result.z.xyz = VEC3(-s, 0.0f, c);
 
     return result;
@@ -785,14 +791,15 @@ inline mat4 Mat4RotationY(const r32 a)
 
 inline mat4 Mat4RotationZ(const r32 a)
 {
-    mat4 result = MAT4_IDENTITY;
+    mat4 result = {};
+    result.w = 1.0f;
 
     r32 s, c;
     SinCos(a, s, c);
 
-    result.x.xyz = VEC3(c, -s, 0.0f);
-    result.y.xyz = VEC3(s, c, 0.0f);
-    result.z.xyz = VEC3(0.0f, 0.0f, 1.0f);
+    result.x.xyz = VEC3(c, s, 0.0f);
+    result.y.xyz = VEC3(-s, c, 0.0f);
+    result.zz = 1.0f;
 
     return result;
 }
@@ -800,12 +807,13 @@ inline mat4 Mat4RotationZ(const r32 a)
 
 inline mat4 Mat4Scaling(const r32 x, const r32 y, const r32 z)
 {
-    mat4 result = MAT4_IDENTITY;
+    mat4 result = {};
+    result.w = 1.0f;
 
-    result.x = VEC4(x, 0.0f, 0.0f, 0.0f);
-    result.y = VEC4(0.0f, y, 0.0f, 0.0f);
-    result.z = VEC4(0.0f, 0.0f, z, 0.0f);
-    result.t = VEC4(0.0f, 0.0f, 0.0f, 1.0f);
+    result.xx = x;
+    result.yy = y;
+    result.zz = z;
+    result.w = 1.0f;
 
     return result;
 }
@@ -934,9 +942,10 @@ quat GetQuaternion(const mat4 &m)
 }
 
 // NOTE: Left-handed
+/*
 mat4 PerspectiveFOV(r32 fov, r32 aspect, r32 nearDist, r32 farDist)
 {
-    mat4 result = MAT4_IDENTITY;
+    mat4 result = {};
 
     if(fov <= 0 || aspect == 0)
     {
@@ -961,7 +970,7 @@ mat4 PerspectiveFOV(r32 fov, r32 aspect, r32 nearDist, r32 farDist)
 
 mat4 Perspective(r32 fov, r32 aspect, r32 nearDist, r32 farDist)
 {
-    mat4 result = MAT4_IDENTITY;
+    mat4 result = {};
 
     r32 depth = nearDist - farDist;
     r32 tanHalfFOV = tanf(0.5f * fov);
@@ -971,6 +980,24 @@ mat4 Perspective(r32 fov, r32 aspect, r32 nearDist, r32 farDist)
     result.zz = (-nearDist - farDist) / depth;
     result.tz = 2.0f * farDist * nearDist / depth;
     result.zw = 1.0f;
+    result.w = 0.0f;
+
+    return result;
+}
+*/
+
+// NOTE: OpenGL
+mat4 Perspective(r32 fov, r32 aspect, r32 nearZ, r32 farZ)
+{
+    mat4 result = {};
+
+    r32 d = 1.0f / tanf(fov / 180.0f * PI * 0.5f);
+    r32 recip = 1.0f / (nearZ - farZ);
+
+    result.xx = d / aspect;
+    result.yy = d;
+    result.zz = (nearZ + farZ) * recip;
+    result.zw = -1.0f;
     result.w = 0.0f;
 
     return result;
