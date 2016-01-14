@@ -14,9 +14,9 @@ union mat3
     };
     struct
     {
-        v3 x, y, z;
+        vec3 x, y, z;
     };
-    r32 m[9];
+    r32 m[3][3];
 };
 //
 // NOTE: Static constants
@@ -130,9 +130,9 @@ inline mat3 operator*(const r32 &b, const mat3 &a)
 }
 
 // NOTE: row vector * matrix
-inline v3 operator*(const v3 &a, const mat3 &b)
+inline vec3 operator*(const vec3 &a, const mat3 &b)
 {
-    v3 result;
+    vec3 result;
 
     result.x = a.x * b.xx + a.y * b.yx + a.z * b.zx;
     result.y = a.x * b.xy + a.y * b.yy + a.z * b.zy;
@@ -142,9 +142,9 @@ inline v3 operator*(const v3 &a, const mat3 &b)
 }
 
 // NOTE: matrix * column vector
-inline v3 operator*(const mat3 &a, const v3 &b)
+inline vec3 operator*(const mat3 &a, const vec3 &b)
 {
-    v3 result;
+    vec3 result;
 
     result.x = a.xx * b.x + a.xy * b.y + a.xz * b.z;
     result.y = a.yx * b.x + a.yy * b.y + a.yz * b.z;
@@ -240,7 +240,7 @@ inline mat3 &operator*=(mat3 &a, const r32 &b)
 }
 
 // NOTE: row vector *= matrix
-inline v3 &operator*=(v3 &a, const mat3 &b)
+inline vec3 &operator*=(vec3 &a, const mat3 &b)
 {
     a = a * b;
 
@@ -263,10 +263,13 @@ inline mat3 &operator/=(mat3 &a, const r32 &b)
 
 inline b32 operator==(const mat3 &a, const mat3 &b)
 {
-    for(u32 i = 0; i < 9; ++i)
+    for(u32 y = 0; y < 3; ++y)
     {
-        if(!AreEqual(a.m[i], b.m[i]))
-            return false;
+        for(u32 x = 0; x < 3; ++x)
+        {
+            if(!AreEqual(a.m[y][x], b.m[y][x]))
+                return false;
+        }
     }
 
     return true;
@@ -392,12 +395,12 @@ void SetRotation(mat3 &m, const r32 x, const r32 y, const r32 z)
     m.zz = cx * cy;
 }
 
-inline void SetRotation(mat3 &m, const v3 &v)
+inline void SetRotation(mat3 &m, const vec3 &v)
 {
     SetRotation(m, v.x, v.y, v.z);
 }
 
-void SetRotation(mat3 &m, v3 v, r32 a)
+void SetRotation(mat3 &m, vec3 v, r32 a)
 {
     r32 s, c, t;
     SinCos(a, s, c);
@@ -460,9 +463,9 @@ inline void SetRotationX(mat3 &m, const r32 a)
     r32 s, c;
     SinCos(a, s, c);
 
-    m.x = V3(1.0f, 0.0f, 0.0f);
-    m.y = V3(0.0f, c, -s);
-    m.z = V3(0.0f, s, c);
+    m.x = VEC3(1.0f, 0.0f, 0.0f);
+    m.y = VEC3(0.0f, c, -s);
+    m.z = VEC3(0.0f, s, c);
 }
 
 inline void SetRotationY(mat3 &m, const r32 a)
@@ -470,9 +473,9 @@ inline void SetRotationY(mat3 &m, const r32 a)
     r32 s, c;
     SinCos(a, s, c);
 
-    m.x = V3(c, 0.0f, s);
-    m.y = V3(0.0f, 1.0f, 0.0f);
-    m.z = V3(-s, 0.0f, c);
+    m.x = VEC3(c, 0.0f, s);
+    m.y = VEC3(0.0f, 1.0f, 0.0f);
+    m.z = VEC3(-s, 0.0f, c);
 }
 
 inline void SetRotationZ(mat3 &m, const r32 a)
@@ -480,28 +483,28 @@ inline void SetRotationZ(mat3 &m, const r32 a)
     r32 s, c;
     SinCos(a, s, c);
 
-    m.x = V3(c, -s, 0.0f);
-    m.y = V3(s, c, 0.0f);
-    m.z = V3(0.0f, 0.0f, 1.0f);
+    m.x = VEC3(c, -s, 0.0f);
+    m.y = VEC3(s, c, 0.0f);
+    m.z = VEC3(0.0f, 0.0f, 1.0f);
 }
 
 inline void SetScale(mat3 &m, const r32 x, const r32 y, const r32 z)
 {
-    m.x = V3(x, 0.0f, 0.0f);
-    m.y = V3(0.0f, y, 0.0f);
-    m.z = V3(0.0f, 0.0f, z);
+    m.x = VEC3(x, 0.0f, 0.0f);
+    m.y = VEC3(0.0f, y, 0.0f);
+    m.z = VEC3(0.0f, 0.0f, z);
 }
 
-inline void SetScale(mat3 &m, const v3 &v)
+inline void SetScale(mat3 &m, const vec3 &v)
 {
     SetScale(m, v.x, v.y, v.z);
 }
 
 // NOTE: See Mike Day, Extracting Euler Angles from a Rotation Matrix
 // https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/07/euler-angles1.pdf}
-v3 GetEulerAngles(const mat3 &m)
+vec3 GetEulerAngles(const mat3 &m)
 {
-    v3 result;
+    vec3 result;
 
     result.x = atan2f(m.yz, m.zz);
     r32 c2 = AASqrt((m.xx * m.xx) + (m.xy * m.xy));
@@ -513,7 +516,7 @@ v3 GetEulerAngles(const mat3 &m)
     return result;
 }
 
-void GetAxisAngle(const mat3 &m, v3 &axis, r32 &angle)
+void GetAxisAngle(const mat3 &m, vec3 &axis, r32 &angle)
 {
     r32 trace = m.xx + m.yy + m.zz;
     angle = acosf(0.5f * (trace - 1.0f));
@@ -525,7 +528,7 @@ void GetAxisAngle(const mat3 &m, v3 &axis, r32 &angle)
     }
     else if(angle < PI - EPSILON)
     {
-        axis = V3(m.zy - m.yz, m.xz - m.zx, m.yx - m.xy);
+        axis = VEC3(m.zy - m.yz, m.xz - m.zx, m.yx - m.xy);
         Normalize(axis);
     }
     else

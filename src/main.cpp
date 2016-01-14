@@ -6,9 +6,9 @@
     TODO: x = done, \ = partial, ? = consider
 
     Vectors:
-    x   v2, v3, v4    (float)  
-    x   v2s, v3s, v4s (int)
-    x   v2u, v3u, v4u (uint)
+    x   vec2, vec3, vec4    (float)  
+    x   vec2s, vec3s, vec4s (int)
+    x   vec2u, vec3u, vec4u (uint)
 
     x   operators
 
@@ -44,7 +44,7 @@
     x   transpose
         
         set:
-   ?    translation     NOTE: this probably isn't necessary with unions (e.g. mat.t.xyz = vec3 / mat.t = vec4)
+    x   translation     NOTE: this probably isn't necessary with unions (e.g. mat.t.xyz = vec3 / mat.t = vec4)
     x   rotation (quaternion)
     x   rotation (pitch, yaw, roll)
     x   rotation (axis, angle)
@@ -135,11 +135,11 @@
 
 int main(int argv, char **argc)
 {
-    v2 dim2 = {};
+    vec2 dim2 = {};
     dim2.x = 0.5f;
     dim2.y = 0.5f;
 
-    v3 dim3 = {};
+    vec3 dim3 = {};
     dim3.x = 0.5f;
     dim3.y = 0.5f;
     dim3.z = 0.5f;
@@ -149,24 +149,24 @@ int main(int argv, char **argc)
         dim3.E[i] = (r32)i;
     }
 
-    v4 dim4 = {};
+    vec4 dim4 = {};
     dim4.xyz = dim3;
     dim4.a = 0.0f;
 
-    v3 x = {1.0f, 0.0f, 0.0f};
-    v3 y = {1.0f, 1.0f, 0.0f};
+    vec3 x = {1.0f, 0.0f, 0.0f};
+    vec3 y = {1.0f, 1.0f, 0.0f};
     Normalize(y);
 
     printf("dot: %.3f\n", Dot(x, y));
     printf("dot: %.3f\n", Dot(VEC3_XAXIS, y));
 
-    v2 dir2 = {1, 0};
-    v2 dir2perp = Perpendicular(dir2);
+    vec2 dir2 = {1, 0};
+    vec2 dir2perp = Perpendicular(dir2);
 
     printf("perp: %3.f, %3.f\n", dir2perp.x, dir2perp.y);
 
     y = {0.0f, 1.0f, 0.0f};
-    v3 cross = Cross(x, y);
+    vec3 cross = Cross(x, y);
 
     printf("cross: <%.3f, %.3f, %.3f>\n", cross.x, cross.y, cross.z);
 

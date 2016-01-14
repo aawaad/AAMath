@@ -3,7 +3,7 @@
 
 #include "aamath.h"
 
-union v4
+union vec4
 {
     struct
     {
@@ -13,14 +13,14 @@ union v4
     {
         r32 r, g, b, a;
     };
-    v3 xyz;
-    v3 rgb;
+    vec3 xyz;
+    vec3 rgb;
     r32 E[4];
 };
 
-inline v4 V4(r32 x, r32 y, r32 z, r32 w)
+inline vec4 VEC4(r32 x, r32 y, r32 z, r32 w)
 {
-    v4 result;
+    vec4 result;
 
     result.x = x;
     result.y = y;
@@ -30,9 +30,9 @@ inline v4 V4(r32 x, r32 y, r32 z, r32 w)
     return result;
 }
 
-inline v4 V4(v3 v, r32 w)
+inline vec4 VEC4(vec3 v, r32 w)
 {
-    v4 result;
+    vec4 result;
 
     result.xyz = v;
     result.w = w;
@@ -44,19 +44,19 @@ inline v4 V4(v3 v, r32 w)
 // NOTE: Static constants
 //
 
-static const v4 V4_XAXIS = {1.0f, 0.0f, 0.0f, 0.0f};
-static const v4 V4_YAXIS = {0.0f, 1.0f, 0.0f, 0.0f};
-static const v4 V4_ZAXIS = {0.0f, 0.0f, 1.0f, 0.0f};
-static const v4 V4_WAXIS = {0.0f, 0.0f, 0.0f, 1.0f};
-static const v4 V4_ORIGIN = {0.0f, 0.0f, 0.0f, 0.0f};
+static const vec4 VEC4_XAXIS = {1.0f, 0.0f, 0.0f, 0.0f};
+static const vec4 VEC4_YAXIS = {0.0f, 1.0f, 0.0f, 0.0f};
+static const vec4 VEC4_ZAXIS = {0.0f, 0.0f, 1.0f, 0.0f};
+static const vec4 VEC4_WAXIS = {0.0f, 0.0f, 0.0f, 1.0f};
+static const vec4 VEC4_ORIGIN = {0.0f, 0.0f, 0.0f, 0.0f};
 
 //
 // NOTE: Operators
 //
 
-inline v4 operator-(const v4 &a)
+inline vec4 operator-(const vec4 &a)
 {
-    v4 result;
+    vec4 result;
 
     result.x = -a.x;
     result.y = -a.y;
@@ -66,9 +66,9 @@ inline v4 operator-(const v4 &a)
     return result;
 }
 
-inline v4 operator+(const v4 &a, const v4 &b)
+inline vec4 operator+(const vec4 &a, const vec4 &b)
 {
-    v4 result;
+    vec4 result;
 
     result.x = a.x + b.x;
     result.y = a.y + b.y;
@@ -78,9 +78,9 @@ inline v4 operator+(const v4 &a, const v4 &b)
     return result;
 }
 
-inline v4 operator+(const v4 &a, const r32 &b)
+inline vec4 operator+(const vec4 &a, const r32 &b)
 {
-    v4 result;
+    vec4 result;
 
     result.x = a.x + b;
     result.y = a.y + b;
@@ -90,9 +90,9 @@ inline v4 operator+(const v4 &a, const r32 &b)
     return result;
 }
 
-inline v4 operator+(const r32 &b, const v4 &a)
+inline vec4 operator+(const r32 &b, const vec4 &a)
 {
-    v4 result;
+    vec4 result;
 
     result.x = a.x + b;
     result.y = a.y + b;
@@ -102,9 +102,9 @@ inline v4 operator+(const r32 &b, const v4 &a)
     return result;
 }
 
-inline v4 operator-(const v4 &a, const v4 &b)
+inline vec4 operator-(const vec4 &a, const vec4 &b)
 {
-    v4 result;
+    vec4 result;
 
     result.x = a.x - b.x;
     result.y = a.y - b.y;
@@ -114,9 +114,9 @@ inline v4 operator-(const v4 &a, const v4 &b)
     return result;
 }
 
-inline v4 operator-(const v4 &a, const r32 &b)
+inline vec4 operator-(const vec4 &a, const r32 &b)
 {
-    v4 result;
+    vec4 result;
 
     result.x = a.x - b;
     result.y = a.y - b;
@@ -126,9 +126,9 @@ inline v4 operator-(const v4 &a, const r32 &b)
     return result;
 }
 
-inline v4 operator-(const r32 &b, const v4 &a)
+inline vec4 operator-(const r32 &b, const vec4 &a)
 {
-    v4 result;
+    vec4 result;
 
     result.x = a.x - b;
     result.y = a.y - b;
@@ -138,9 +138,9 @@ inline v4 operator-(const r32 &b, const v4 &a)
     return result;
 }
 
-inline v4 operator*(const v4 &a, r32 b)
+inline vec4 operator*(const vec4 &a, r32 b)
 {
-    v4 result;
+    vec4 result;
 
     result.x = a.x * b;
     result.y = a.y * b;
@@ -150,16 +150,16 @@ inline v4 operator*(const v4 &a, r32 b)
     return result;
 }
 
-inline v4 operator*(r32 a, const v4 &b)
+inline vec4 operator*(r32 a, const vec4 &b)
 {
-    v4 result = b * a;
+    vec4 result = b * a;
 
     return result;
 }
 
-inline v4 operator/(const v4 &a, r32 b)
+inline vec4 operator/(const vec4 &a, r32 b)
 {
-    v4 result;
+    vec4 result;
 
     r32 oneOverB = 1.0f / b;
 
@@ -171,9 +171,9 @@ inline v4 operator/(const v4 &a, r32 b)
     return result;
 }
 
-inline v4 operator/(r32 a, const v4 &b)
+inline vec4 operator/(r32 a, const vec4 &b)
 {
-    v4 result;
+    vec4 result;
 
     r32 oneOverA = 1.0f / a;
 
@@ -186,49 +186,49 @@ inline v4 operator/(r32 a, const v4 &b)
 }
 
 
-inline v4 &operator*=(v4 &a, const r32 &b)
+inline vec4 &operator*=(vec4 &a, const r32 &b)
 {
     a = a * b;
 
     return a;
 }
 
-inline v4 &operator/=(v4 &a, const r32 &b)
+inline vec4 &operator/=(vec4 &a, const r32 &b)
 {
     a = a / b;
 
     return a;
 }
 
-inline v4 &operator+=(v4 &a, const v4 &b)
+inline vec4 &operator+=(vec4 &a, const vec4 &b)
 {
     a = a + b;
 
     return a;
 }
 
-inline v4 &operator+=(v4 &a, const r32 &b)
+inline vec4 &operator+=(vec4 &a, const r32 &b)
 {
     a = a + b;
 
     return a;
 }
 
-inline v4 &operator-=(v4 &a, const v4 &b)
+inline vec4 &operator-=(vec4 &a, const vec4 &b)
 {
     a = a - b;
 
     return a;
 }
 
-inline v4 &operator-=(v4 &a, const r32 &b)
+inline vec4 &operator-=(vec4 &a, const r32 &b)
 {
     a = a - b;
 
     return a;
 }
  
-inline b32 operator==(const v4 &a, const v4 &b)
+inline b32 operator==(const vec4 &a, const vec4 &b)
 {
     return (AreEqual(a.x, b.x)
             && AreEqual(a.y, b.y)
@@ -236,7 +236,7 @@ inline b32 operator==(const v4 &a, const v4 &b)
             && AreEqual(a.w, b.w));
 }
  
-inline b32 operator!=(const v4 &a, const v4 &b)
+inline b32 operator!=(const vec4 &a, const vec4 &b)
 {
     return !(AreEqual(a.x, b.x)
             && AreEqual(a.y, b.y)
@@ -248,9 +248,9 @@ inline b32 operator!=(const v4 &a, const v4 &b)
 // NOTE: Functions
 //
 
-inline v4 Cross(const v4 &a, const v4 &b)
+inline vec4 Cross(const vec4 &a, const vec4 &b)
 {
-    v4 result = V4(a.y * b.z - a.z * b.y,
+    vec4 result = VEC4(a.y * b.z - a.z * b.y,
                  a.z * b.x - a.x * b.z,
                  a.x * b.y - b.x * a.y,
                  a.w); // set to 0 or use a/b?
@@ -258,7 +258,7 @@ inline v4 Cross(const v4 &a, const v4 &b)
     return result;
 }
 
-inline r32 DistanceSq(const v4 &a, const v4 &b)
+inline r32 DistanceSq(const vec4 &a, const vec4 &b)
 {
     r32 x = b.x - a.x,
         y = b.y - a.y,
@@ -267,85 +267,86 @@ inline r32 DistanceSq(const v4 &a, const v4 &b)
     return (x*x + y*y + z*z);
 }
 
-inline r32 Distance(const v4 &a, const v4 &b)
+inline r32 Distance(const vec4 &a, const vec4 &b)
 {
     return AASqrt(DistanceSq(a, b));
 }
 
-inline r32 Dot(const v4 &a, const v4 &b)
+inline r32 Dot(const vec4 &a, const vec4 &b)
 {
     return (a.x * b.x + a.y * b.y + a.z * b.z);
 }
 
-inline v4 Hadamard(const v4 &a, const v4 &b)
+inline vec4 Hadamard(const vec4 &a, const vec4 &b)
 {
-    return V4(a.x * b.x, a.y * b.y, a.z * b.z, a.w * a.w);
+    return VEC4(a.x * b.x, a.y * b.y, a.z * b.z, a.w * a.w);
 }
 
-inline r32 LengthSq(const v4 &a)
+inline r32 LengthSq(const vec4 &a)
 {
     return Dot(a, a);
 }
 
-inline r32 Length(const v4 &a)
+inline r32 Length(const vec4 &a)
 {
     return AASqrt(LengthSq(a));
 }
 
-inline v4 Normalize(const v4 &v)
+inline vec4 Normalize(const vec4 &v)
 {
-    v4 result;
+    vec4 result;
     r32 oneOverLength = InvSqrt(LengthSq(v));
 
     result.x = v.x * oneOverLength;
     result.y = v.y * oneOverLength;
     result.z = v.z * oneOverLength;
+    result.w = 0;
 
     return result;
 }
 
-inline v4 Reflect(const v4 &v, const v4 &n)
+inline vec4 Reflect(const vec4 &v, const vec4 &n)
 {
     return v - 2.0f * (Dot(v, n) * n);
 }
 
-inline v4 Refract(const v4 &v, const v4 &n, r32 idx)
+inline vec4 Refract(const vec4 &v, const vec4 &n, r32 idx)
 {
     r32 ndotv = Dot(n, v);
     r32 k = 1.0f - idx * idx * (1.0f - ndotv * ndotv);
     if (k < 0.0f)
-        return V4(0.0f, 0.0f, 0.0f, 0.0f);
+        return VEC4(0.0f, 0.0f, 0.0f, 0.0f);
     else
         return idx * v - (idx * ndotv + AASqrt(k)) * n;
 }
 
 // A . (B x C)
-inline r32 TripleScal(const v4 &a, const v4 &b, const v4 &c)
+inline r32 TripleScal(const vec4 &a, const vec4 &b, const vec4 &c)
 {
     return Dot(a, Cross(b, c));
 }
 
 // (B x C) x A
-inline v4 TripleVec(const v4 &a, const v4 &b, const v4 &c)
+inline vec4 TripleVec(const vec4 &a, const vec4 &b, const vec4 &c)
 {
     return Cross(a, Cross(b, c));
 }
 
-inline b32 IsZero(const v4 &v)
+inline b32 IsZero(const vec4 &v)
 {
     return (LengthSq(v) <= EPSILON);
 }
 
-inline b32 IsUnit(const v4 &v)
+inline b32 IsUnit(const vec4 &v)
 {
     return IsZero(1.0f - v.x * v.x - v.y * v.y - v.z * v.z);
 }
 
 //
-// NOTE: v4 signed int
+// NOTE: vec4 signed int
 //
 
-union v4s
+union vec4s
 {
     struct
     {
@@ -355,14 +356,14 @@ union v4s
     {
         s32 r, g, b, a;
     };
-    v3s xyz;
-    v3s rgb;
+    vec3s xyz;
+    vec3s rgb;
     s32 E[4];
 };
 
-inline v4s V4S(s32 x, s32 y, s32 z, s32 w)
+inline vec4s VEC4S(s32 x, s32 y, s32 z, s32 w)
 {
-    v4s result;
+    vec4s result;
 
     result.x = x;
     result.y = y;
@@ -372,9 +373,9 @@ inline v4s V4S(s32 x, s32 y, s32 z, s32 w)
     return result;
 }
 
-inline v4s V4S(v3s v, s32 w)
+inline vec4s VEC4S(vec3s v, s32 w)
 {
-    v4s result;
+    vec4s result;
 
     result.xyz = v;
     result.w = w;
@@ -386,19 +387,19 @@ inline v4s V4S(v3s v, s32 w)
 // NOTE: Static constants
 //
 
-static const v4s V4S_XAXIS = {1, 0, 0, 0};
-static const v4s V4S_YAXIS = {0, 1, 0, 0};
-static const v4s V4S_ZAXIS = {0, 0, 1, 0};
-static const v4s V4S_WAXIS = {0, 0, 0, 1};
-static const v4s V4S_ORIGIN = {0, 0, 0, 0};
+static const vec4s VEC4S_XAXIS = {1, 0, 0, 0};
+static const vec4s VEC4S_YAXIS = {0, 1, 0, 0};
+static const vec4s VEC4S_ZAXIS = {0, 0, 1, 0};
+static const vec4s VEC4S_WAXIS = {0, 0, 0, 1};
+static const vec4s VEC4S_ORIGIN = {0, 0, 0, 0};
 
 //
 // NOTE: Operators
 //
 
-inline v4s operator-(const v4s &a)
+inline vec4s operator-(const vec4s &a)
 {
-    v4s result;
+    vec4s result;
 
     result.x = -a.x;
     result.y = -a.y;
@@ -408,9 +409,9 @@ inline v4s operator-(const v4s &a)
     return result;
 }
 
-inline v4s operator+(const v4s &a, const v4s &b)
+inline vec4s operator+(const vec4s &a, const vec4s &b)
 {
-    v4s result;
+    vec4s result;
 
     result.x = a.x + b.x;
     result.y = a.y + b.y;
@@ -420,9 +421,9 @@ inline v4s operator+(const v4s &a, const v4s &b)
     return result;
 }
 
-inline v4s operator+(const v4s &a, const s32 &b)
+inline vec4s operator+(const vec4s &a, const s32 &b)
 {
-    v4s result;
+    vec4s result;
 
     result.x = a.x + b;
     result.y = a.y + b;
@@ -432,9 +433,9 @@ inline v4s operator+(const v4s &a, const s32 &b)
     return result;
 }
 
-inline v4s operator+(const s32 &b, const v4s &a)
+inline vec4s operator+(const s32 &b, const vec4s &a)
 {
-    v4s result;
+    vec4s result;
 
     result.x = a.x + b;
     result.y = a.y + b;
@@ -444,9 +445,9 @@ inline v4s operator+(const s32 &b, const v4s &a)
     return result;
 }
 
-inline v4s operator-(const v4s &a, const v4s &b)
+inline vec4s operator-(const vec4s &a, const vec4s &b)
 {
-    v4s result;
+    vec4s result;
 
     result.x = a.x - b.x;
     result.y = a.y - b.y;
@@ -456,9 +457,9 @@ inline v4s operator-(const v4s &a, const v4s &b)
     return result;
 }
 
-inline v4s operator-(const v4s &a, const s32 &b)
+inline vec4s operator-(const vec4s &a, const s32 &b)
 {
-    v4s result;
+    vec4s result;
 
     result.x = a.x - b;
     result.y = a.y - b;
@@ -468,9 +469,9 @@ inline v4s operator-(const v4s &a, const s32 &b)
     return result;
 }
 
-inline v4s operator-(const s32 &b, const v4s &a)
+inline vec4s operator-(const s32 &b, const vec4s &a)
 {
-    v4s result;
+    vec4s result;
 
     result.x = a.x - b;
     result.y = a.y - b;
@@ -480,9 +481,9 @@ inline v4s operator-(const s32 &b, const v4s &a)
     return result;
 }
 
-inline v4s operator*(const v4s &a, s32 b)
+inline vec4s operator*(const vec4s &a, s32 b)
 {
-    v4s result;
+    vec4s result;
 
     result.x = a.x * b;
     result.y = a.y * b;
@@ -492,16 +493,16 @@ inline v4s operator*(const v4s &a, s32 b)
     return result;
 }
 
-inline v4s operator*(s32 a, const v4s &b)
+inline vec4s operator*(s32 a, const vec4s &b)
 {
-    v4s result = b * a;
+    vec4s result = b * a;
 
     return result;
 }
 
-inline v4s operator/(const v4s &a, s32 b)
+inline vec4s operator/(const vec4s &a, s32 b)
 {
-    v4s result;
+    vec4s result;
 
     result.x = a.x / b;
     result.y = a.y / b;
@@ -511,9 +512,9 @@ inline v4s operator/(const v4s &a, s32 b)
     return result;
 }
 
-inline v4s operator/(s32 a, const v4s &b)
+inline vec4s operator/(s32 a, const vec4s &b)
 {
-    v4s result;
+    vec4s result;
 
     result.x = b.x / a;
     result.y = b.y / a;
@@ -524,54 +525,54 @@ inline v4s operator/(s32 a, const v4s &b)
 }
 
 
-inline v4s &operator*=(v4s &a, const s32 &b)
+inline vec4s &operator*=(vec4s &a, const s32 &b)
 {
     a = a * b;
 
     return a;
 }
 
-inline v4s &operator/=(v4s &a, const s32 &b)
+inline vec4s &operator/=(vec4s &a, const s32 &b)
 {
     a = a / b;
 
     return a;
 }
 
-inline v4s &operator+=(v4s &a, const v4s &b)
+inline vec4s &operator+=(vec4s &a, const vec4s &b)
 {
     a = a + b;
 
     return a;
 }
 
-inline v4s &operator+=(v4s &a, const s32 &b)
+inline vec4s &operator+=(vec4s &a, const s32 &b)
 {
     a = a + b;
 
     return a;
 }
 
-inline v4s &operator-=(v4s &a, const v4s &b)
+inline vec4s &operator-=(vec4s &a, const vec4s &b)
 {
     a = a - b;
 
     return a;
 }
 
-inline v4s &operator-=(v4s &a, const s32 &b)
+inline vec4s &operator-=(vec4s &a, const s32 &b)
 {
     a = a - b;
 
     return a;
 }
  
-inline b32 operator==(const v4s &a, const v4s &b)
+inline b32 operator==(const vec4s &a, const vec4s &b)
 {
     return ((a.x == b.x) && (a.y == b.y) && (a.z == b.z) && (a.w == b.w));
 }
  
-inline b32 operator!=(const v4s &a, const v4s &b)
+inline b32 operator!=(const vec4s &a, const vec4s &b)
 {
     return !((a.x == b.x) && (a.y == b.y) && (a.z == b.z) && (a.w == b.w));
 }
@@ -580,9 +581,9 @@ inline b32 operator!=(const v4s &a, const v4s &b)
 // NOTE: Functions
 //
 
-inline v4s Cross(const v4s &a, const v4s &b)
+inline vec4s Cross(const vec4s &a, const vec4s &b)
 {
-    v4s result = V4S(a.y * b.z - a.z * b.y,
+    vec4s result = VEC4S(a.y * b.z - a.z * b.y,
                  a.z * b.x - a.x * b.z,
                  a.x * b.y - b.x * a.y,
                  a.w); // set to 0 or use a/b?
@@ -590,7 +591,7 @@ inline v4s Cross(const v4s &a, const v4s &b)
     return result;
 }
 
-inline s32 DistanceSq(const v4s &a, const v4s &b)
+inline s32 DistanceSq(const vec4s &a, const vec4s &b)
 {
     s32 x = b.x - a.x,
         y = b.y - a.y,
@@ -599,53 +600,53 @@ inline s32 DistanceSq(const v4s &a, const v4s &b)
     return (x*x + y*y + z*z);
 }
 
-inline r32 Distance(const v4s &a, const v4s &b)
+inline r32 Distance(const vec4s &a, const vec4s &b)
 {
     return AASqrt((r32)DistanceSq(a, b));
 }
 
-inline s32 Dot(const v4s &a, const v4s &b)
+inline s32 Dot(const vec4s &a, const vec4s &b)
 {
     return (a.x * b.x + a.y * b.y + a.z * b.z);
 }
 
-inline v4s Hadamard(const v4s &a, const v4s &b)
+inline vec4s Hadamard(const vec4s &a, const vec4s &b)
 {
-    return V4S(a.x * b.x, a.y * b.y, a.z * b.z, a.w * a.w);
+    return VEC4S(a.x * b.x, a.y * b.y, a.z * b.z, a.w * a.w);
 }
 
-inline s32 LengthSq(const v4s &a)
+inline s32 LengthSq(const vec4s &a)
 {
     return Dot(a, a);
 }
 
-inline r32 Length(const v4s &a)
+inline r32 Length(const vec4s &a)
 {
     return AASqrt((r32)LengthSq(a));
 }
 
 // NOTE: A . (B x C)
-inline s32 TripleScal(const v4s &a, const v4s &b, const v4s &c)
+inline s32 TripleScal(const vec4s &a, const vec4s &b, const vec4s &c)
 {
     return Dot(a, Cross(b, c));
 }
 
 // NOTE: (B x C) x A
-inline v4s TripleVec(const v4s &a, const v4s &b, const v4s &c)
+inline vec4s TripleVec(const vec4s &a, const vec4s &b, const vec4s &c)
 {
     return Cross(a, Cross(b, c));
 }
 
-inline b32 IsZero(const v4s &v)
+inline b32 IsZero(const vec4s &v)
 {
     return ((v.x == 0) && (v.y == 0) && (v.z == 0));
 }
 
 //
-// NOTE: v4 unsigned int
+// NOTE: vec4 unsigned int
 //
 
-union v4u
+union vec4u
 {
     struct
     {
@@ -655,14 +656,14 @@ union v4u
     {
         u32 r, g, b, a;
     };
-    v3u xyz;
-    v3u rgb;
+    vec3u xyz;
+    vec3u rgb;
     u32 E[4];
 };
 
-inline v4u V4U(u32 x, u32 y, u32 z, u32 w)
+inline vec4u VEC4U(u32 x, u32 y, u32 z, u32 w)
 {
-    v4u result;
+    vec4u result;
 
     result.x = x;
     result.y = y;
@@ -672,9 +673,9 @@ inline v4u V4U(u32 x, u32 y, u32 z, u32 w)
     return result;
 }
 
-inline v4u V4U(v3u v, u32 w)
+inline vec4u VEC4U(vec3u v, u32 w)
 {
-    v4u result;
+    vec4u result;
 
     result.xyz = v;
     result.w = w;
@@ -686,19 +687,19 @@ inline v4u V4U(v3u v, u32 w)
 // NOTE: Static constants
 //
 
-static const v4u V4U_XAXIS = {1, 0, 0, 0};
-static const v4u V4U_YAXIS = {0, 1, 0, 0};
-static const v4u V4U_ZAXIS = {0, 0, 1, 0};
-static const v4u V4U_WAXIS = {0, 0, 0, 1};
-static const v4u V4U_ORIGIN = {0, 0, 0, 0};
+static const vec4u VEC4U_XAXIS = {1, 0, 0, 0};
+static const vec4u VEC4U_YAXIS = {0, 1, 0, 0};
+static const vec4u VEC4U_ZAXIS = {0, 0, 1, 0};
+static const vec4u VEC4U_WAXIS = {0, 0, 0, 1};
+static const vec4u VEC4U_ORIGIN = {0, 0, 0, 0};
 
 //
 // NOTE: Operators
 //
 
-inline v4u operator+(const v4u &a, const v4u &b)
+inline vec4u operator+(const vec4u &a, const vec4u &b)
 {
-    v4u result;
+    vec4u result;
 
     result.x = a.x + b.x;
     result.y = a.y + b.y;
@@ -708,9 +709,9 @@ inline v4u operator+(const v4u &a, const v4u &b)
     return result;
 }
 
-inline v4u operator+(const v4u &a, const u32 &b)
+inline vec4u operator+(const vec4u &a, const u32 &b)
 {
-    v4u result;
+    vec4u result;
 
     result.x = a.x + b;
     result.y = a.y + b;
@@ -720,9 +721,9 @@ inline v4u operator+(const v4u &a, const u32 &b)
     return result;
 }
 
-inline v4u operator+(const u32 &b, const v4u &a)
+inline vec4u operator+(const u32 &b, const vec4u &a)
 {
-    v4u result;
+    vec4u result;
 
     result.x = a.x + b;
     result.y = a.y + b;
@@ -732,9 +733,9 @@ inline v4u operator+(const u32 &b, const v4u &a)
     return result;
 }
 
-inline v4u operator-(const v4u &a, const v4u &b)
+inline vec4u operator-(const vec4u &a, const vec4u &b)
 {
-    v4u result;
+    vec4u result;
 
     result.x = a.x - b.x;
     result.y = a.y - b.y;
@@ -744,9 +745,9 @@ inline v4u operator-(const v4u &a, const v4u &b)
     return result;
 }
 
-inline v4u operator-(const v4u &a, const u32 &b)
+inline vec4u operator-(const vec4u &a, const u32 &b)
 {
-    v4u result;
+    vec4u result;
 
     result.x = a.x - b;
     result.y = a.y - b;
@@ -756,9 +757,9 @@ inline v4u operator-(const v4u &a, const u32 &b)
     return result;
 }
 
-inline v4u operator-(const u32 &b, const v4u &a)
+inline vec4u operator-(const u32 &b, const vec4u &a)
 {
-    v4u result;
+    vec4u result;
 
     result.x = a.x - b;
     result.y = a.y - b;
@@ -768,9 +769,9 @@ inline v4u operator-(const u32 &b, const v4u &a)
     return result;
 }
 
-inline v4u operator*(const v4u &a, u32 b)
+inline vec4u operator*(const vec4u &a, u32 b)
 {
-    v4u result;
+    vec4u result;
 
     result.x = a.x * b;
     result.y = a.y * b;
@@ -780,16 +781,16 @@ inline v4u operator*(const v4u &a, u32 b)
     return result;
 }
 
-inline v4u operator*(u32 a, const v4u &b)
+inline vec4u operator*(u32 a, const vec4u &b)
 {
-    v4u result = b * a;
+    vec4u result = b * a;
 
     return result;
 }
 
-inline v4u operator/(const v4u &a, u32 b)
+inline vec4u operator/(const vec4u &a, u32 b)
 {
-    v4u result;
+    vec4u result;
 
     result.x = a.x / b;
     result.y = a.y / b;
@@ -799,9 +800,9 @@ inline v4u operator/(const v4u &a, u32 b)
     return result;
 }
 
-inline v4u operator/(u32 a, const v4u &b)
+inline vec4u operator/(u32 a, const vec4u &b)
 {
-    v4u result;
+    vec4u result;
 
     result.x = b.x / a;
     result.y = b.y / a;
@@ -812,54 +813,54 @@ inline v4u operator/(u32 a, const v4u &b)
 }
 
 
-inline v4u &operator*=(v4u &a, const u32 &b)
+inline vec4u &operator*=(vec4u &a, const u32 &b)
 {
     a = a * b;
 
     return a;
 }
 
-inline v4u &operator/=(v4u &a, const u32 &b)
+inline vec4u &operator/=(vec4u &a, const u32 &b)
 {
     a = a / b;
 
     return a;
 }
 
-inline v4u &operator+=(v4u &a, const v4u &b)
+inline vec4u &operator+=(vec4u &a, const vec4u &b)
 {
     a = a + b;
 
     return a;
 }
 
-inline v4u &operator+=(v4u &a, const u32 &b)
+inline vec4u &operator+=(vec4u &a, const u32 &b)
 {
     a = a + b;
 
     return a;
 }
 
-inline v4u &operator-=(v4u &a, const v4u &b)
+inline vec4u &operator-=(vec4u &a, const vec4u &b)
 {
     a = a - b;
 
     return a;
 }
 
-inline v4u &operator-=(v4u &a, const u32 &b)
+inline vec4u &operator-=(vec4u &a, const u32 &b)
 {
     a = a - b;
 
     return a;
 }
  
-inline b32 operator==(const v4u &a, const v4u &b)
+inline b32 operator==(const vec4u &a, const vec4u &b)
 {
     return ((a.x == b.x) && (a.y == b.y) && (a.z == b.z) && (a.w == b.w));
 }
  
-inline b32 operator!=(const v4u &a, const v4u &b)
+inline b32 operator!=(const vec4u &a, const vec4u &b)
 {
     return !((a.x == b.x) && (a.y == b.y) && (a.z == b.z) && (a.w == b.w));
 }
@@ -868,17 +869,17 @@ inline b32 operator!=(const v4u &a, const v4u &b)
 // NOTE: Functions
 //
 
-inline u32 Dot(const v4u &a, const v4u &b)
+inline u32 Dot(const vec4u &a, const vec4u &b)
 {
     return (a.x * b.x + a.y * b.y + a.z * b.z);
 }
 
-inline v4u Hadamard(const v4u &a, const v4u &b)
+inline vec4u Hadamard(const vec4u &a, const vec4u &b)
 {
-    return V4U(a.x * b.x, a.y * b.y, a.z * b.z, a.w * a.w);
+    return VEC4U(a.x * b.x, a.y * b.y, a.z * b.z, a.w * a.w);
 }
 
-inline b32 IsZero(const v4u &v)
+inline b32 IsZero(const vec4u &v)
 {
     return ((v.x == 0) && (v.y == 0) && (v.z == 0));
 }
