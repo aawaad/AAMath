@@ -2,8 +2,10 @@
 #define QUAT_H
 
 #include "aamath.h"
+#include "vec3.h"
+#include "vec4.h"
 
-union quat
+typedef union _quat
 {
     struct
     {
@@ -14,9 +16,9 @@ union quat
         r32 w;
         vec3 xyz;
     };
-    vec3 vec4;
+    vec4 v;
     r32 E[4];
-};
+} quat;
 
 inline quat Quat(r32 w, r32 x, r32 y, r32 z)
 {
@@ -55,7 +57,7 @@ inline quat operator-(const quat &q)
 {
     quat result;
 
-    result.vec4 = -q.vec4;
+    result.v = -q.v;
 
     return result;
 }
@@ -64,7 +66,7 @@ inline quat operator-(const quat &a, const quat &b)
 {
     quat result;
 
-    result.vec4 = a.vec4 - b.vec4;
+    result.v = a.v - b.v;
 
     return result;
 }
@@ -73,7 +75,7 @@ inline quat operator+(const quat &a, const quat &b)
 {
     quat result;
 
-    result.vec4 = a.vec4 + b.vec4;
+    result.v = a.v + b.v;
 
     return result;
 }
@@ -94,7 +96,7 @@ inline quat operator*(const quat &q, const r32 x)
 {
     quat result;
 
-    result.vec4 = q.vec4 * x;
+    result.v = q.v * x;
 
     return result;
 }
@@ -103,7 +105,7 @@ inline quat operator*(const r32 x, const quat &q)
 {
     quat result;
 
-    result.vec4 = q.vec4 * x;
+    result.v = q.v * x;
 
     return result;
 }
@@ -168,7 +170,7 @@ inline quat Conjugate(const quat &q)
 
 inline r32 Dot(const quat &a, const quat &b)
 {
-    return Dot(a.vec4, b.vec4);
+    return Dot(a.v, b.v);
 }
 
 inline quat Inverse(const quat &q)
@@ -191,7 +193,7 @@ inline quat Inverse(const quat &q)
 
 inline r32 Norm(const quat &q)
 {
-    return Dot(q.vec4, q.vec4);
+    return Dot(q.v, q.v);
 }
 
 inline void Normalize(quat &q)
@@ -206,7 +208,7 @@ inline void Normalize(quat &q)
     {
         r32 recip = InvSqrt(norm);
 
-        q.vec4 *= recip;
+        q.v *= recip;
     }
 }
 
@@ -431,7 +433,7 @@ inline void Lerp(quat &q, const quat &start, r32 t, const quat &end)
     }
 }
 
-void Slerp(quat &q, const quat &start, r32 t, const quat &end)
+inline void Slerp(quat &q, const quat &start, r32 t, const quat &end)
 {
     r32 cos = Dot(start, end);
     r32 startt, endt;
@@ -474,7 +476,7 @@ void Slerp(quat &q, const quat &start, r32 t, const quat &end)
 }
 
 // NOTE: From Essential Math, based on "Hacking Quaternions", Jonathan Blow, http://number-none.com/product/Hacking%20Quaternions/
-void ApproxSlerp(quat &q, const quat &start, r32 t, const quat &end)
+inline void ApproxSlerp(quat &q, const quat &start, r32 t, const quat &end)
 {
     r32 cos = Dot(start, end);
 

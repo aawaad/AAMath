@@ -2,8 +2,9 @@
 #define VEC4_H
 
 #include "aamath.h"
+#include "vec3.h"
 
-union vec4
+typedef union _vec4
 {
     struct
     {
@@ -13,12 +14,20 @@ union vec4
     {
         r32 r, g, b, a;
     };
-    vec3 xyz;
-    vec3 rgb;
+    struct
+    {
+        vec3 xyz;
+        r32 __unused0;
+    };
+    struct
+    {
+        vec3 rgb;
+        r32 __unused1;
+    };
     r32 E[4];
-};
+} vec4;
 
-inline vec4 VEC4(r32 x, r32 y, r32 z, r32 w)
+inline vec4 Vec4(r32 x, r32 y, r32 z, r32 w)
 {
     vec4 result;
 
@@ -30,7 +39,7 @@ inline vec4 VEC4(r32 x, r32 y, r32 z, r32 w)
     return result;
 }
 
-inline vec4 VEC4(vec3 v, r32 w)
+inline vec4 Vec4(vec3 v, r32 w)
 {
     vec4 result;
 
@@ -47,8 +56,7 @@ inline vec4 VEC4(vec3 v, r32 w)
 static const vec4 VEC4_XAXIS = {1.0f, 0.0f, 0.0f, 0.0f};
 static const vec4 VEC4_YAXIS = {0.0f, 1.0f, 0.0f, 0.0f};
 static const vec4 VEC4_ZAXIS = {0.0f, 0.0f, 1.0f, 0.0f};
-static const vec4 VEC4_WAXIS = {0.0f, 0.0f, 0.0f, 1.0f};
-static const vec4 VEC4_ORIGIN = {0.0f, 0.0f, 0.0f, 0.0f};
+static const vec4 VEC4_ORIGIN = {0.0f, 0.0f, 0.0f, 1.0f};
 
 //
 // NOTE: Operators
@@ -250,7 +258,7 @@ inline b32 operator!=(const vec4 &a, const vec4 &b)
 
 inline vec4 Cross(const vec4 &a, const vec4 &b)
 {
-    vec4 result = VEC4(a.y * b.z - a.z * b.y,
+    vec4 result = Vec4(a.y * b.z - a.z * b.y,
                  a.z * b.x - a.x * b.z,
                  a.x * b.y - b.x * a.y,
                  a.w); // set to 0 or use a/b?
@@ -279,7 +287,7 @@ inline r32 Dot(const vec4 &a, const vec4 &b)
 
 inline vec4 Hadamard(const vec4 &a, const vec4 &b)
 {
-    return VEC4(a.x * b.x, a.y * b.y, a.z * b.z, a.w * a.w);
+    return Vec4(a.x * b.x, a.y * b.y, a.z * b.z, a.w * a.w);
 }
 
 inline r32 LengthSq(const vec4 &a)
@@ -292,9 +300,12 @@ inline r32 Length(const vec4 &a)
     return AASqrt(LengthSq(a));
 }
 
-inline vec4 Normalize(const vec4 &v)
+inline vec4 Normalized(const vec4 &v)
 {
     vec4 result;
+
+    Assert(v.x != 0 && v.y != 0 && v.z != 0 && v.w != 0);
+
     r32 oneOverLength = InvSqrt(LengthSq(v));
 
     result.x = v.x * oneOverLength;
@@ -303,6 +314,15 @@ inline vec4 Normalize(const vec4 &v)
     result.w = 0;
 
     return result;
+}
+
+inline void Normalize(vec4 &v)
+{
+    Assert(v.x != 0 && v.y != 0 && v.z != 0 && v.w != 0);
+
+    r32 oneOverLength = InvSqrt(LengthSq(v));
+
+    v *= oneOverLength;
 }
 
 inline vec4 Reflect(const vec4 &v, const vec4 &n)
@@ -315,7 +335,7 @@ inline vec4 Refract(const vec4 &v, const vec4 &n, r32 idx)
     r32 ndotv = Dot(n, v);
     r32 k = 1.0f - idx * idx * (1.0f - ndotv * ndotv);
     if (k < 0.0f)
-        return VEC4(0.0f, 0.0f, 0.0f, 0.0f);
+        return Vec4(0.0f, 0.0f, 0.0f, 0.0f);
     else
         return idx * v - (idx * ndotv + AASqrt(k)) * n;
 }
@@ -361,7 +381,7 @@ union vec4s
     s32 E[4];
 };
 
-inline vec4s VEC4S(s32 x, s32 y, s32 z, s32 w)
+inline vec4s Vec4s(s32 x, s32 y, s32 z, s32 w)
 {
     vec4s result;
 
@@ -373,7 +393,7 @@ inline vec4s VEC4S(s32 x, s32 y, s32 z, s32 w)
     return result;
 }
 
-inline vec4s VEC4S(vec3s v, s32 w)
+inline vec4s Vec4s(vec3s v, s32 w)
 {
     vec4s result;
 
@@ -583,7 +603,7 @@ inline b32 operator!=(const vec4s &a, const vec4s &b)
 
 inline vec4s Cross(const vec4s &a, const vec4s &b)
 {
-    vec4s result = VEC4S(a.y * b.z - a.z * b.y,
+    vec4s result = Vec4s(a.y * b.z - a.z * b.y,
                  a.z * b.x - a.x * b.z,
                  a.x * b.y - b.x * a.y,
                  a.w); // set to 0 or use a/b?
@@ -612,7 +632,7 @@ inline s32 Dot(const vec4s &a, const vec4s &b)
 
 inline vec4s Hadamard(const vec4s &a, const vec4s &b)
 {
-    return VEC4S(a.x * b.x, a.y * b.y, a.z * b.z, a.w * a.w);
+    return Vec4s(a.x * b.x, a.y * b.y, a.z * b.z, a.w * a.w);
 }
 
 inline s32 LengthSq(const vec4s &a)
@@ -661,7 +681,7 @@ union vec4u
     u32 E[4];
 };
 
-inline vec4u VEC4U(u32 x, u32 y, u32 z, u32 w)
+inline vec4u Vec4u(u32 x, u32 y, u32 z, u32 w)
 {
     vec4u result;
 
@@ -673,7 +693,7 @@ inline vec4u VEC4U(u32 x, u32 y, u32 z, u32 w)
     return result;
 }
 
-inline vec4u VEC4U(vec3u v, u32 w)
+inline vec4u Vec4u(vec3u v, u32 w)
 {
     vec4u result;
 
@@ -876,7 +896,7 @@ inline u32 Dot(const vec4u &a, const vec4u &b)
 
 inline vec4u Hadamard(const vec4u &a, const vec4u &b)
 {
-    return VEC4U(a.x * b.x, a.y * b.y, a.z * b.z, a.w * a.w);
+    return Vec4u(a.x * b.x, a.y * b.y, a.z * b.z, a.w * a.w);
 }
 
 inline b32 IsZero(const vec4u &v)

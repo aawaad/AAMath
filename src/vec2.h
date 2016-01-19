@@ -3,16 +3,16 @@
 
 #include "aamath.h"
 
-union vec2
+typedef union _vec2
 {
     struct
     {
         r32 x, y;
     };
     r32 E[2];
-};
+} vec2;
 
-inline vec2 V2(r32 x, r32 y)
+inline vec2 Vec2(r32 x, r32 y)
 {
     vec2 result;
 
@@ -201,7 +201,7 @@ inline r32 Dot(const vec2 &a, const vec2 &b)
 
 inline vec2 Hadamard(const vec2 &a, const vec2 &b)
 {
-    return V2(a.x * b.x, a.y * b.y);
+    return Vec2(a.x * b.x, a.y * b.y);
 }
 
 inline r32 LengthSq(const vec2 &v)
@@ -214,9 +214,12 @@ inline r32 Length(const vec2 &v)
     return AASqrt(LengthSq(v));
 }
 
-inline vec2 Normalize(const vec2 &v)
+inline vec2 Normalized(const vec2 &v)
 {
     vec2 result;
+
+    Assert(v.x != 0 && v.y != 0);
+
     r32 oneOverLength = InvSqrt(LengthSq(v));
 
     result.x = v.x * oneOverLength;
@@ -225,9 +228,19 @@ inline vec2 Normalize(const vec2 &v)
     return result;
 }
 
+inline void Normalize(vec2 &v)
+{
+    Assert(v.x != 0 && v.y != 0);
+
+    r32 oneOverLength = InvSqrt(LengthSq(v));
+
+    v.x *= oneOverLength;
+    v.y *= oneOverLength;
+}
+
 inline vec2 Perpendicular(const vec2 &v)
 {
-    return V2(-v.y, v.x);
+    return Vec2(-v.y, v.x);
 }
 
 inline vec2 Reflect(const vec2 &v, const vec2 &n)
@@ -240,7 +253,7 @@ inline vec2 Refract(const vec2 &v, const vec2 &n, r32 idx)
     r32 ndotv = Dot(n, v);
     r32 k = 1.0f - idx * idx * (1.0f - ndotv * ndotv);
     if (k < 0)
-        return V2(0, 0);
+        return Vec2(0, 0);
     else
         return idx * v - (idx * ndotv + AASqrt(k)) * n;
 }
@@ -268,7 +281,7 @@ union vec2s
     s32 E[2];
 };
 
-inline vec2s V2S(s32 x, s32 y)
+inline vec2s Vec2s(s32 x, s32 y)
 {
     vec2s result;
 
@@ -455,7 +468,7 @@ inline s32 Dot(const vec2s &a, const vec2s &b)
 
 inline vec2s Hadamard(const vec2s &a, const vec2s &b)
 {
-    return V2S(a.x * b.x, a.y * b.y);
+    return Vec2s(a.x * b.x, a.y * b.y);
 }
 
 inline s32 LengthSq(const vec2s &v)
@@ -470,7 +483,7 @@ inline r32 Length(const vec2s &v)
 
 inline vec2s Perpendicular(const vec2s &v)
 {
-    return V2S(-v.y, v.x);
+    return Vec2s(-v.y, v.x);
 }
 
 inline b32 IsZero(const vec2s &v)
@@ -491,7 +504,7 @@ union vec2u
     u32 E[2];
 };
 
-inline vec2u V2U(u32 x, u32 y)
+inline vec2u Vec2u(u32 x, u32 y)
 {
     vec2u result;
 
@@ -655,7 +668,7 @@ inline u32 Dot(const vec2u &a, const vec2u &b)
 
 inline vec2u Hadamard(const vec2u &a, const vec2u &b)
 {
-    return V2U(a.x * b.x, a.y * b.y);
+    return Vec2u(a.x * b.x, a.y * b.y);
 }
 
 inline b32 IsZero(const vec2u &v)

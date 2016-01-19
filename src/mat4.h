@@ -2,23 +2,46 @@
 #define MAT4_H
 
 #include "aamath.h"
+#include "vec3.h"
+#include "vec4.h"
+#include "mat3.h"
 #include "quat.h"
 
-union mat4
+// TODO: #define to switch between row/column major?
+
+// NOTE: Column vectors, column-major matrices -- T * R * S * v
+typedef union _mat4
 {
     struct
     {
+        /* NOTE: Row-major
         r32 xx, xy, xz, xw,
             yx, yy, yz, yw,
             zx, zy, zz, zw,
-            tx, ty, tz, w;
+            tx, ty, tz, ww;
+        */
+
+        // NOTE: Column-major
+        r32 xx, yx, zx, tx,
+            xy, yy, zy, ty,
+            xz, yz, zz, tz,
+            xw, yw, zw, ww;
     };
+    /* NOTE: Row-major easy vector accessors
     struct
     {
         vec4 x, y, z, t;
     };
+    */
+    // NOTE: Column-major component accessors (e.g. x = Xx, Yx, Zx, Tx);
+    struct
+    {
+        vec4 x, y, z, w;
+    };
+
+    vec4 v[4];
     r32 m[4][4];
-};
+} mat4;
 
 //
 // NOTE: Static constants
@@ -37,10 +60,10 @@ inline mat4 operator-(const mat4 &a)
 {
     mat4 result;
 
-    result.x = -a.x;
-    result.y = -a.y;
-    result.z = -a.z;
-    result.t = -a.t;
+    result.v[0] = -a.v[0];
+    result.v[1] = -a.v[1];
+    result.v[2] = -a.v[2];
+    result.v[3] = -a.v[3];
 
     return result;
 }
@@ -49,34 +72,34 @@ inline mat4 operator+(const mat4 &a, const r32 &b)
 {
     mat4 result;
 
-    result.x = a.x + b;
-    result.y = a.y + b;
-    result.z = a.z + b;
-    result.t = a.t + b;
+    result.v[0] = a.v[0] + b;
+    result.v[1] = a.v[1] + b;
+    result.v[2] = a.v[2] + b;
+    result.v[3] = a.v[3] + b;
 
     return result;
 }
 
-inline mat4 operator+(const r32 &b, const mat4 &a)
+/*inline mat4 operator+(const r32 &b, const mat4 &a)
 {
     mat4 result;
 
-    result.x = a.x + b;
-    result.y = a.y + b;
-    result.z = a.z + b;
-    result.t = a.t + b;
+    result.v[0] = a.v[0] + b;
+    result.v[1] = a.v[1] + b;
+    result.v[2] = a.v[2] + b;
+    result.v[3] = a.v[3] + b;
 
     return result;
-}
+}*/
 
 inline mat4 operator+(const mat4 &a, const mat4 &b)
 {
     mat4 result;
 
-    result.x = a.x + b.x;
-    result.y = a.y + b.y;
-    result.z = a.z + b.z;
-    result.t = a.t + b.t;
+    result.v[0] = a.v[0] + b.v[0];
+    result.v[1] = a.v[1] + b.v[1];
+    result.v[2] = a.v[2] + b.v[2];
+    result.v[3] = a.v[3] + b.v[3];
 
     return result;
 }
@@ -85,34 +108,34 @@ inline mat4 operator-(const mat4 &a, const r32 &b)
 {
     mat4 result;
 
-    result.x = a.x - b;
-    result.y = a.y - b;
-    result.z = a.z - b;
-    result.t = a.t - b;
-
+    result.v[0] = a.v[0] - b;
+    result.v[1] = a.v[1] - b;
+    result.v[2] = a.v[2] - b;
+    result.v[3] = a.v[3] - b;
+    
     return result;
 }
 
-inline mat4 operator-(const r32 &b, const mat4 &a)
+/*inline mat4 operator-(const r32 &b, const mat4 &a)
 {
     mat4 result;
 
-    result.x = a.x - b;
-    result.y = a.y - b;
-    result.z = a.z - b;
-    result.t = a.t - b;
+    result.v[0] = a.v[0] - b.v[0];
+    result.v[1] = a.v[1] - b.v[1];
+    result.v[2] = a.v[2] - b.v[2];
+    result.v[3] = a.v[3] - b.v[3];
 
     return result;
-}
+}*/
 
 inline mat4 operator-(const mat4 &a, const mat4 &b)
 {
     mat4 result;
 
-    result.x = a.x - b.x;
-    result.y = a.y - b.y;
-    result.z = a.z - b.z;
-    result.t = a.t - b.t;
+    result.v[0] = a.v[0] - b.v[0];
+    result.v[1] = a.v[1] - b.v[1];
+    result.v[2] = a.v[2] - b.v[2];
+    result.v[3] = a.v[3] - b.v[3];
 
     return result;
 }
@@ -121,77 +144,49 @@ inline mat4 operator*(const mat4 &a, const r32 &b)
 {
     mat4 result;
 
-    result.x = a.x * b;
-    result.y = a.y * b;
-    result.z = a.z * b;
-    result.t = a.t * b;
+    result.v[0] = a.v[0] * b;
+    result.v[1] = a.v[1] * b;
+    result.v[2] = a.v[2] * b;
+    result.v[3] = a.v[3] * b;
 
     return result;
 }
 
-inline mat4 operator*(const r32 &b, const mat4 &a)
+/*inline mat4 operator*(const r32 &b, const mat4 &a)
 {
     mat4 result;
 
-    result.x = a.x * b;
-    result.y = a.y * b;
-    result.z = a.z * b;
-    result.t = a.t * b;
+    result.v[0] = a.v[0] * b;
+    result.v[1] = a.v[1] * b;
+    result.v[2] = a.v[2] * b;
+    result.v[3] = a.v[3] * b;
 
     return result;
-}
+}*/
 
-/*
- * NOTE: vec3 versions should be duplicated for w = 0 or 1, use functions instead?
- *
-
-// NOTE: row vector * matrix
-inline vec3 operator*(const vec3 &a, const mat4 &b)
+/* NOTE: row vector * matrix
+inline vec4 operator*(const vec4 &v, const mat4 &m)
 {
-    vec3 result;
+    vec4 result;
 
-    result.x = a.x * b.xx + a.y * b.yx + a.z * b.zx;
-    result.y = a.x * b.xy + a.y * b.yy + a.z * b.zy;
-    result.z = a.x * b.xz + a.y * b.yz + a.z * b.zz;
-
-    return result;
-}
-
-// NOTE: matrix * column vector
-inline vec3 operator*(const mat4 &a, const vec3 &b)
-{
-    vec3 result;
-
-    result.x = a.xx * b.x + a.xy * b.y + a.xz * b.z;
-    result.y = a.yx * b.x + a.yy * b.y + a.yz * b.z;
-    result.z = a.zx * b.x + a.zy * b.y + a.zz * b.z;
+    result.x = v.x * m.xx + v.y * m.yx + v.z * m.zx + v.w * m.tx;
+    result.y = v.x * m.xy + v.y * m.yy + v.z * m.zy + v.w * m.ty;
+    result.z = v.x * m.xz + v.y * m.yz + v.z * m.zz + v.w * m.tz;
+    result.w = v.x * m.xw + v.y * m.yw + v.z * m.zw + v.w * m.w;
 
     return result;
 }
 */
 
-// NOTE: row vector * matrix
-inline vec4 operator*(const vec4 &a, const mat4 &b)
-{
-    vec4 result;
-
-    result.x = a.x * b.xx + a.y * b.yx + a.z * b.zx + a.w * b.xw;
-    result.y = a.x * b.xy + a.y * b.yy + a.z * b.zy + a.w * b.yw;
-    result.z = a.x * b.xz + a.y * b.yz + a.z * b.zz + a.w * b.zw;
-    result.w = a.x * b.tx + a.y * b.ty + a.z * b.tz + a.w * a.w;
-
-    return result;
-}
-
 // NOTE: matrix * column vector
-inline vec4 operator*(const mat4 &a, const vec4 &b)
+inline vec4 operator*(const mat4 &m, const vec4 &v)
 {
     vec4 result;
 
-    result.x = a.xx * b.x + a.xy * b.y + a.xz * b.z + a.xw * b.w;
-    result.y = a.yx * b.x + a.yy * b.y + a.yz * b.z + a.yw * b.w;
-    result.z = a.zx * b.x + a.zy * b.y + a.zz * b.z + a.zw * b.w;
-    result.w = a.tx * b.x + a.ty * b.y + a.tz * b.z + a.w * b.w;
+    result.x = m.xx * v.x + m.yx * v.y + m.zx * v.z + m.tx * v.w;
+    result.y = m.xy * v.x + m.yy * v.y + m.zy * v.z + m.ty * v.w;
+    result.z = m.xz * v.x + m.yz * v.y + m.zz * v.z + m.tz * v.w;
+    result.w = m.xw * v.x + m.yw * v.y + m.zw * v.z + m.ww * v.w;
 
     return result;
 }
@@ -200,25 +195,17 @@ inline mat4 operator*(const mat4 &a, const mat4 &b)
 {
     mat4 result;
 
-    result.xx = a.xx * b.xx + a.xy * b.yx + a.xz * b.zx + a.xw * b.tx;
-    result.xy = a.xx * b.xy + a.xy * b.yy + a.xz * b.zy + a.xw * b.ty;
-    result.xz = a.xx * b.xz + a.xy * b.yz + a.xz * b.zz + a.xw * b.tz;
-    result.xw = a.xx * b.xw + a.xy * b.yw + a.xz * b.zw + a.xw * b.w;
-
-    result.yx = a.yx * b.xx + a.yy * b.yx + a.yz * b.zx + a.yw * b.tx;
-    result.yy = a.yx * b.xy + a.yy * b.yy + a.yz * b.zy + a.yw * b.ty;
-    result.yz = a.yx * b.xz + a.yy * b.yz + a.yz * b.zz + a.yw * b.tz;
-    result.yw = a.yx * b.xw + a.yy * b.yw + a.yz * b.zw + a.yw * b.w;
-
-    result.zx = a.zx * b.xx + a.zy * b.yx + a.zz * b.zx + a.zw * b.tx;
-    result.zy = a.zx * b.xy + a.zy * b.yy + a.zz * b.zy + a.zw * b.ty;
-    result.zz = a.zx * b.xz + a.zy * b.yz + a.zz * b.zz + a.zw * b.tz;
-    result.zw = a.zx * b.xw + a.zy * b.yw + a.zz * b.zw + a.zw * b.w;
-
-    result.tx = a.tx * b.xx + a.ty * b.yx + a.tz * b.zx + a.w * b.tx;
-    result.ty = a.tx * b.xy + a.ty * b.yy + a.tz * b.zy + a.w * b.ty;
-    result.tz = a.tx * b.xz + a.ty * b.yz + a.tz * b.zz + a.w * b.tz;
-    result.w  = a.tx * b.xw + a.ty * b.yw + a.tz * b.zw + a.w * b.w;
+    for(int i = 0; i < 4; ++i)
+    {
+        for(int j = 0; j < 4; ++j)
+        {
+            result.m[i][j] = 0;
+            for(int k = 0; k < 4; ++k)
+            {
+                result.m[i][j] += a.m[k][j] * b.m[i][k];
+            }
+        }
+    }
 
     return result;
 }
@@ -227,83 +214,87 @@ inline mat4 operator/(const mat4 &a, const r32 &b)
 {
     mat4 result;
 
-    result.x = a.x / b;
-    result.y = a.y / b;
-    result.z = a.z / b;
-    result.t = a.t / b;
+    r32 r = 1.0f / b;
+
+    result.v[0] = a.v[0] * r;
+    result.v[1] = a.v[1] * r;
+    result.v[2] = a.v[2] * r;
+    result.v[3] = a.v[3] * r;
 
     return result;
 }
 
-inline mat4 operator/(const r32 &b, const mat4 &a)
+/*inline mat4 operator/(const r32 &b, const mat4 &a)
 {
     mat4 result;
 
-    result.x = a.x / b;
-    result.y = a.y / b;
-    result.z = a.z / b;
-    result.t = a.t / b;
+    r32 r = 1.0f / b;
+
+    result.v[0] = a.v[0] * r;
+    result.v[1] = a.v[1] * r;
+    result.v[2] = a.v[2] * r;
+    result.v[3] = a.v[3] * r;
 
     return result;
-}
+}*/
 
 inline mat4 &operator+=(mat4 &a, const r32 &b)
 {
-    a.x = a.x + b;
-    a.y = a.y + b;
-    a.z = a.z + b;
-    a.t = a.t + b;
+    a.v[0] += b;
+    a.v[1] += b;
+    a.v[2] += b;
+    a.v[3] += b;
 
     return a;
 }
 
 inline mat4 &operator+=(mat4 &a, const mat4 &b)
 {
-    a.x = a.x + b.x;
-    a.y = a.y + b.y;
-    a.z = a.z + b.z;
-    a.t = a.t + b.t;
+    a.v[0] += b.v[0];
+    a.v[1] += b.v[1];
+    a.v[2] += b.v[2];
+    a.v[3] += b.v[3];
 
     return a;
 }
 
 inline mat4 &operator-=(mat4 &a, const r32 &b)
 {
-    a.x -= b;
-    a.y -= b;
-    a.z -= b;
-    a.t -= b;
+    a.v[0] -= b;
+    a.v[1] -= b;
+    a.v[2] -= b;
+    a.v[3] -= b;
 
     return a;
 }
 
 inline mat4 &operator-=(mat4 &a, const mat4 &b)
 {
-    a.x -= b.x;
-    a.y -= b.y;
-    a.z -= b.z;
-    a.t -= b.t;
+    a.v[0] -= b.v[0];
+    a.v[1] -= b.v[1];
+    a.v[2] -= b.v[2];
+    a.v[3] -= b.v[3];
 
     return a;
 }
 
 inline mat4 &operator*=(mat4 &a, const r32 &b)
 {
-    a.x *= b;
-    a.y *= b;
-    a.z *= b;
-    a.t *= b;
+    a.v[0] *= b;
+    a.v[1] *= b;
+    a.v[2] *= b;
+    a.v[3] *= b;
 
     return a;
 }
 
-// NOTE: row vector *= matrix
-inline vec4 &operator*=(vec4 &a, const mat4 &b)
+/* NOTE: row vector *= matrix
+inline vec4 &operator*=(vec4 &v, const mat4 &m)
 {
-    a = a * b;
+    v = v * m;
 
-    return a;
-}
+    return v;
+}*/
 
 inline mat4 &operator*=(mat4 &a, const mat4 &b)
 {
@@ -342,87 +333,72 @@ inline b32 operator!=(const mat4 &a, const mat4 &b)
 // NOTE: Functions
 //
 
-inline mat4 Transpose(const mat4 &m)
+inline mat4 Transposed(const mat4 &m)
 {
     mat4 result;
 
-    result.xx = m.xx;
-    result.xy = m.yx;
-    result.xz = m.zx;
-    result.xw = m.tx;
-    result.yx = m.xy;
-    result.yy = m.yy;
-    result.yz = m.zy;
-    result.yw = m.ty;
-    result.zx = m.xz;
-    result.zy = m.yz;
-    result.zz = m.zz;
-    result.zw = m.tz;
-    result.tx = m.xw;
-    result.ty = m.yw;
-    result.tz = m.zw;
-    result.w = m.w;
+    for(u32 i = 0; i < 4; ++i)
+    {
+        for(u32 j = 0; j < 4; ++j)
+        {
+            result.m[i][j] = m.m[j][i];
+        }
+    }
     
     return result;
 }
 
-inline void TransposeModify(mat4 &m)
+inline void Transpose(mat4 &m)
 {
-    r32 temp = m.xy;
-    m.xy = m.yx;
-    m.yx = temp;
+    r32 temp = m.m[0][1];
+    m.m[0][1] = m.m[1][0];
+    m.m[1][0] = temp;
 
-    temp = m.xz;
-    m.xz = m.zx;
-    m.zx = temp;
+    temp = m.m[0][2];
+    m.m[0][2] = m.m[2][0];
+    m.m[2][0] = temp;
 
-    temp = m.xw;
-    m.xw = m.tx;
-    m.tx = temp;
+    temp = m.m[0][3];
+    m.m[0][3] = m.m[3][0];
+    m.m[3][0] = temp;
 
-    temp = m.yz;
-    m.yz = m.zy;
-    m.zy = temp;
+    temp = m.m[1][2];
+    m.m[1][2] = m.m[2][1];
+    m.m[2][1] = temp;
 
-    temp = m.yw;
-    m.yw = m.ty;
-    m.ty = temp;
+    temp = m.m[1][3];
+    m.m[1][3] = m.m[3][1];
+    m.m[3][1] = temp;
 
-    temp = m.zw;
-    m.zw = m.tz;
-    m.tz = temp;
+    temp = m.m[2][3];
+    m.m[2][3] = m.m[3][2];
+    m.m[3][2] = temp;
 }
 
-inline mat4 Adjoint(const mat4 &m)
+inline mat3 Adjoint(const mat4 &m)
 {
-    mat4 result;
+    mat3 result;
 
-    result.xx = (m.yy * m.zz - m.yz * m.zy);
-    result.xy = (m.xy * m.zz - m.xz * m.zy);
-    result.xz = (m.xy * m.yz - m.xz * m.yy);
+    result.xx = m.yy * m.zz - m.zy * m.yz;
+    result.yx = m.xy * m.zz - m.zy * m.xz;
+    result.zx = m.xy * m.yz - m.yy * m.xz;
 
-    result.yx = (m.yx * m.zz - m.yz * m.zx);
-    result.yy = (m.xx * m.zz - m.xz * m.zx);
-    result.yz = (m.xx * m.yz - m.xz * m.yx);
-    
-    result.zx = (m.yx * m.zy - m.yy * m.zx);
-    result.zy = (m.xx * m.zy - m.xy * m.zx);
-    result.zz = (m.xx * m.yy - m.xy * m.yx);
+    result.xy = m.yx * m.zz - m.yz * m.zx;
+    result.yy = m.xx * m.zz - m.zx * m.xz;
+    result.zy = m.xx * m.yz - m.yx * m.xz;
 
-    result.xw = m.xw;
-    result.xy = m.xy;
-    result.xz = m.xz;
-
-    result.t = m.t;
+    result.xz = m.yx * m.zy - m.zx * m.yy;
+    result.yz = m.xx * m.zy - m.zx * m.xy;
+    result.zz = m.xx * m.yy - m.yx * m.xy;
 
     return result;
 }
 
 inline r32 Determinant(const mat4 &m)
 {
-    return (m.xx * (m.yy * m.zz - m.yz * m.zy)
-          - m.xy * (m.yx * m.zz - m.yz * m.zx)
-          + m.xz * (m.yx * m.zy - m.yy * m.zx));
+    return (m.xx * (m.yy * m.zz - m.zy * m.yz)
+          - m.yx * (m.xy * m.zz - m.zy * m.xz)
+          + m.zx * (m.xy * m.yz - m.yy * m.xz));
 }
 
 // NOTE: Get matrix's upper 3x3 matrix (rotation + scaling)
@@ -437,25 +413,60 @@ inline mat3 Upper3x3(const mat4 &m)
     return result;
 }
 
+inline mat4 Mat4Identity()
+{
+    mat4 result;
+
+    result.v[0] = { 1.0f, 0.0f, 0.0f, 0.0f };
+    result.v[1] = { 0.0f, 1.0f, 0.0f, 0.0f };
+    result.v[2] = { 0.0f, 0.0f, 1.0f, 0.0f };
+    result.v[3] = { 0.0f, 0.0f, 0.0f, 1.0f };
+
+    return result;
+}
+
 inline mat4 Inverse(const mat4 &m)
 {
     mat4 result;
 
-    r32 det = Determinant(m);
+    r32 co1 = m.yy * m.zz - m.zy * m.yz,
+        co2 = m.xy * m.zz - m.zy * m.xz,
+        co3 = m.xy * m.yz - m.yy * m.xz;
 
-    if(IsZero(det))
+    r32 det = m.xx * co1 - m.yx * co2 + m.zx * co3;
+
+    if(!IsZero(det))
     {
-        // NOTE: assert?
-        result = MAT4_IDENTITY;
-        return result;
+        r32 invdet = 1.0f / det;
+
+        // NOTE: Adjoint / det
+        result.xx = invdet * co1;
+        result.xy = invdet * co2;
+        result.xz = invdet * co3;
+        result.xw = 0;
+
+        result.yx = invdet * (m.yx * m.zz - m.yz * m.zx);
+        result.yy = invdet * (m.xx * m.zz - m.zx * m.xz);
+        result.yz = invdet * (m.xx * m.yz - m.yx * m.xz);
+        result.yw = 0;
+
+        result.zx = invdet * (m.yx * m.zy - m.zx * m.yy);
+        result.zy = invdet * (m.xx * m.zy - m.zx * m.xy);
+        result.zz = invdet * (m.xx * m.yy - m.yx * m.xy);
+        result.zw = 0;
+
+        // NOTE: multiply translation by transposed 3x3
+        result.tx = -result.xx * m.tx - result.yx * m.ty - result.zx * m.tz;
+        result.ty = -result.xy * m.ty - result.yy * m.ty - result.zy * m.tz;
+        result.tz = -result.xz * m.tz - result.yz * m.ty - result.zz * m.tz;
+        result.ww = 1.0f;
     }
-
-    r32 invdet = 1.0f / det;
-    
-    result = invdet * Adjoint(m);
-
-    // NOTE: should probably do this directly
-    result.t.xyz *= -Upper3x3(m);
+    else
+    {
+        // NOTE: Singular matrix
+        Assert(false)
+        result = MAT4_IDENTITY;
+    }
 
     return result;
 }
@@ -464,16 +475,16 @@ inline mat4 Hadamard(const mat4 &a, const mat4 &b)
 {
     mat4 result;
 
-    result.x = Hadamard(a.x, b.x);
-    result.y = Hadamard(a.y, b.y);
-    result.z = Hadamard(a.z, b.z);
-    result.t = Hadamard(a.t, b.t);
+    result.v[0] = Hadamard(a.v[0], b.v[0]);
+    result.v[1] = Hadamard(a.v[1], b.v[1]);
+    result.v[2] = Hadamard(a.v[2], b.v[2]);
+    result.v[3] = Hadamard(a.v[3], b.v[3]);
 
     return result;
 }
 
-// NOTE: Rotation by Euler (XYZ)
-void SetRotation(mat4 &m, const r32 x, const r32 y, const r32 z)
+// NOTE: Rotation by Euler (Z*Y*Z)
+inline void SetRotation(mat4 &m, const r32 x, const r32 y, const r32 z)
 {
     r32 sx, cx;
     SinCos(x, sx, cx);
@@ -485,30 +496,32 @@ void SetRotation(mat4 &m, const r32 x, const r32 y, const r32 z)
     SinCos(z, sz, cz);
 
     m.xx = cy * cz;
-    m.xy = -(cy * sz);
-    m.xz = sy;
-    m.yx = (sx * sy * cz) + (cx * sz);
+    m.yx = -(cy * sz);
+    m.zx = sy;
+    m.xy = (sx * sy * cz) + (cx * sz);
     m.yy = -(sx * sy * sz) + (cx * cz);
-    m.yz = -(sx * cy);
-    m.zx = -(cx * sy * cz) + (sx * sz);
-    m.zy = (cx * sy * sz) + (sx * cz);
+    m.zy = -(sx * cy);
+    m.xz = -(cx * sy * cz) + (sx * sz);
+    m.yz = (cx * sy * sz) + (sx * cz);
     m.zz = cx * cy;
 }
 
 // NOTE: Proxy for above
+//       Rotation by Euler (Z*Y*Z)
 inline void SetRotation(mat4 &m, const vec3 &v)
 {
     SetRotation(m, v.x, v.y, v.z);
 }
 
 // NOTE: Proxy for above
+//       Rotation by Euler (Z*Y*Z)
 inline void SetRotation(mat4 &m, const vec4 &v)
 {
     SetRotation(m, v.x, v.y, v.z);
 }
 
 // NOTE: Axis angle rotation
-void SetRotation(mat4 &m, vec4 v, r32 a)
+inline void SetRotation(mat4 &m, const vec3 &v, const r32 a)
 {
     r32 s, c, t;
     SinCos(a, s, c);
@@ -521,23 +534,38 @@ void SetRotation(mat4 &m, vec4 v, r32 a)
         txy = tx * v.y, tyz = tx * v.z, txz = tx * v.z;
 
     m.xx = tx * v.x + c;
-    m.xy = txy - sz;
-    m.xz = txz + sy;
-    m.yx = txy + sz;
+    m.yx = txy - sz;
+    m.zx = txz + sy;
+    m.xy = txy + sz;
     m.yy = ty * v.y + c;
-    m.yz = tyz - sx;
-    m.zx = txz - sy;
-    m.zy = tyz + sx;
+    m.zy = tyz - sx;
+    m.xz = txz - sy;
+    m.yz = tyz + sx;
     m.zz = tz * v.z + c;
 }
 
 // NOTE: Proxy for above
-void SetRotation(mat4 &m, vec3 v, r32 a)
+//       Axis angle rotation
+inline void SetRotation(mat4 &m, vec4 v, const r32 a)
 {
-    SetRotation(m, VEC4(v, 0), a);
+    SetRotation(m, v.xyz, a);
 }
 
-void SetRotation(mat4 &m, quat &q)
+// NOTE: Set rotation from 3x3 rotation matrix
+inline void SetRotation(mat4 &m, const mat3 &r)
+{
+    m.x.xyz = r.x;
+    m.tx = 0;
+    m.y.xyz = r.y;
+    m.ty = 0;
+    m.z.xyz = r.z;
+    m.tz = 0;
+    m.w.xyz = {};
+    m.ww = 0;
+}
+
+// NOTE: Set rotation from quaternion
+inline void SetRotation(mat4 &m, quat &q)
 {
     // NOTE: Assert unit quaternion
 
@@ -560,15 +588,15 @@ void SetRotation(mat4 &m, quat &q)
     zz = q.z * zs;
 
     m.xx = 1.0f - (yy + zz);
-    m.xy = xy - wz;
-    m.xz = xz + wy;
+    m.yx = xy - wz;
+    m.zx = xz + wy;
 
-    m.yx = xy + wz;
+    m.xy = xy + wz;
     m.yy = 1.0f - (xx + zz);
-    m.yz = yz - wx;
+    m.zy = yz - wx;
 
-    m.zx = xz - wy;
-    m.zy = yz + wx;
+    m.xz = xz - wy;
+    m.yz = yz + wx;
     m.zz = 1.0f - (xx + yy);
 }
 
@@ -577,9 +605,9 @@ inline void SetRotationX(mat4 &m, const r32 a)
     r32 s, c;
     SinCos(a, s, c);
 
-    m.x.xyz = VEC3(1.0f, 0.0f, 0.0f);
-    m.y.xyz = VEC3(0.0f, c, s);
-    m.z.xyz = VEC3(0.0f, -s, c);
+    m.x.xyz = Vec3(1.0f, 0.0f, 0.0f);
+    m.y.xyz = Vec3(0.0f, c, -s);
+    m.z.xyz = Vec3(0.0f, s, c);
 }
 
 inline void SetRotationY(mat4 &m, const r32 a)
@@ -587,9 +615,9 @@ inline void SetRotationY(mat4 &m, const r32 a)
     r32 s, c;
     SinCos(a, s, c);
 
-    m.x.xyz = VEC3(c, 0.0f, s);
-    m.y.xyz = VEC3(0.0f, 1.0f, 0.0f);
-    m.z.xyz = VEC3(-s, 0.0f, c);
+    m.x.xyz = Vec3(c, 0.0f, s);
+    m.y.xyz = Vec3(0.0f, 1.0f, 0.0f);
+    m.z.xyz = Vec3(-s, 0.0f, c);
 }
 
 inline void SetRotationZ(mat4 &m, const r32 a)
@@ -597,16 +625,16 @@ inline void SetRotationZ(mat4 &m, const r32 a)
     r32 s, c;
     SinCos(a, s, c);
 
-    m.x.xyz = VEC3(c, s, 0.0f);
-    m.y.xyz = VEC3(-s, c, 0.0f);
-    m.z.xyz = VEC3(0.0f, 0.0f, 1.0f);
+    m.x.xyz = Vec3(c, s, 0.0f);
+    m.y.xyz = Vec3(-s, c, 0.0f);
+    m.z.xyz = Vec3(0.0f, 0.0f, 1.0f);
 }
 
 inline void SetScale(mat4 &m, const r32 x, const r32 y, const r32 z)
 {
-    m.x.xyz = VEC3(x, 0.0f, 0.0f);
-    m.y.xyz = VEC3(0.0f, y, 0.0f);
-    m.z.xyz = VEC3(0.0f, 0.0f, z);
+    m.x.xyz = Vec3(x, 0.0f, 0.0f);
+    m.y.xyz = Vec3(0.0f, y, 0.0f);
+    m.z.xyz = Vec3(0.0f, 0.0f, z);
 }
 
 inline void SetScale(mat4 &m, const vec3 &v)
@@ -619,11 +647,22 @@ inline void SetScale(mat4 &m, const vec4 &v)
     SetScale(m, v.x, v.y, v.z);
 }
 
-// NOTE: Rotation by Euler (XYZ)
-mat4 Mat4Rotation(const r32 x, const r32 y, const r32 z)
+inline void SetTranslation(mat4 &m, const vec3 &v)
 {
-    mat4 result = {};
-    result.w = 1.0f;
+    m.tx = v.x;
+    m.ty = v.y;
+    m.tz = v.z;
+}
+
+inline void SetTranslation(mat4 &m, const vec4 &v)
+{
+    SetTranslation(m, v.xyz);
+}
+
+// NOTE: Rotation by Euler (Z*X*Y)
+inline mat4 Mat4Rotation(const r32 x, const r32 y, const r32 z)
+{
+    mat4 result;
 
     r32 sx, cx;
     SinCos(x, sx, cx);
@@ -635,20 +674,44 @@ mat4 Mat4Rotation(const r32 x, const r32 y, const r32 z)
     SinCos(z, sz, cz);
 
     result.xx = cy * cz;
-    result.xy = -(cy * sz);
-    result.xz = sy;
-    result.yx = (sx * sy * cz) + (cx * sz);
-    result.yy = -(sx * sy * sz) + (cx + cz);
-    result.yz = -(sx * cy);
-    result.zx = -(cx * sy * cz) + (sx * sz);
-    result.zy = (cx * sy * sz) + (sx * cz);
+    result.yx = -(cy * sz);
+    result.zx = sy;
+    result.tx = 0;
+
+    result.xy = (sx * sy * cz) + (cx * sz);
+    result.yy = -(sx * sy * sz) + (cx * cz);
+    result.zy = -(sx * cy);
+    result.ty = 0;
+
+    result.xz = -(cx * sy * cz) + (sx * sz);
+    result.yz = (cx * sy * sz) + (sx * cz);
     result.zz = cx * cy;
+    result.tz = 0;
+
+    result.xw = 0;
+    result.yw = 0;
+    result.zw = 0;
+    result.ww = 1.0f;
 
     return result;
 }
 
-// NOTE: Rotation by Euler (YXZ (y-up) / Rotation Pitch Yaw)
-mat4 Mat4RotationRPY(const r32 x, const r32 y, const r32 z)
+// NOTE: Proxy for above
+// NOTE: Rotation by Euler (Z*X*Y)
+inline mat4 Mat4Rotation(const vec3 &v)
+{
+    return Mat4Rotation(v.x, v.y, v.z);
+}
+
+// NOTE: Proxy for above
+// NOTE: Rotation by Euler (Z*X*Y)
+inline mat4 Mat4Rotation(const vec4 &v)
+{
+    return Mat4Rotation(v.x, v.y, v.z);
+}
+
+/* NOTE: Rotation by Euler (YXZ (y-up) / Rotation Pitch Yaw)
+inline mat4 Mat4RotationRPY(const r32 x, const r32 y, const r32 z)
 {
     mat4 result = {};
     result.w = 1.0f;
@@ -672,28 +735,13 @@ mat4 Mat4RotationRPY(const r32 x, const r32 y, const r32 z)
     result.zy = (cx * cz * sy) + (sx * sz);
     result.zz = cx * cy;
 
-    // IMPORTANT: Remove/fix!
-    //return Transpose(result);
     return result;
-}
-
-// NOTE: Proxy for above
-inline mat4 Mat4Rotation(const vec3 &v)
-{
-    return Mat4Rotation(v.x, v.y, v.z);
-}
-
-// NOTE: Proxy for above
-inline mat4 Mat4Rotation(const vec4 &v)
-{
-    return Mat4Rotation(v.x, v.y, v.z);
-}
+}*/
 
 // NOTE: Axis angle rotation
-mat4 Mat4Rotation(vec4 v, r32 a)
+inline mat4 Mat4Rotation(const vec4 &v, const r32 a)
 {
-    mat4 result = {};
-    result.w = 1.0f;
+    mat4 result;
 
     r32 s, c, t;
     SinCos(a, s, c);
@@ -706,23 +754,33 @@ mat4 Mat4Rotation(vec4 v, r32 a)
         txy = tx * v.y, tyz = tx * v.z, txz = tx * v.z;
 
     result.xx = tx * v.x + c;
-    result.xy = txy - sz;
-    result.xz = txz + sy;
-    result.yx = txy + sz;
+    result.yx = txy - sz;
+    result.zx = txz + sy;
+    result.tx = 0;
+
+    result.xy = txy + sz;
     result.yy = ty * v.y + c;
-    result.yz = tyz - sx;
-    result.zx = txz - sy;
-    result.zy = tyz + sx;
+    result.zy = tyz - sx;
+    result.ty = 0;
+
+    result.xz = txz - sy;
+    result.yz = tyz + sx;
     result.zz = tz * v.z + c;
+    result.tz = 0;
+
+    result.xw = 0;
+    result.yw = 0;
+    result.zw = 0;
+    result.ww = 1.0f;
 
     return result;
 }
 
-mat4 Mat4Rotation(quat &q)
+// NOTE: Rotation from quaternion
+inline mat4 Mat4Rotation(const quat &q)
 {
     // NOTE: Assert unit quaternion
-    mat4 result = {};
-    result.w = 1.0f;
+    mat4 result;
 
     r32 xs, ys, zs,
         wx, wy, wz,
@@ -745,14 +803,22 @@ mat4 Mat4Rotation(quat &q)
     result.xx = 1.0f - (yy + zz);
     result.xy = xy - wz;
     result.xz = xz + wy;
+    result.tx = 0;
 
     result.yx = xy + wz;
     result.yy = 1.0f - (xx + zz);
     result.yz = yz - wx;
+    result.ty = 0;
 
     result.zx = xz - wy;
     result.zy = yz + wx;
     result.zz = 1.0f - (xx + yy);
+    result.tz = 0;
+
+    result.xw = 0;
+    result.yw = 0;
+    result.zw = 0;
+    result.ww = 1.0f;
 
     // IMPORTANT: Remove/fix!
     //return Transpose(result);
@@ -762,14 +828,14 @@ mat4 Mat4Rotation(quat &q)
 inline mat4 Mat4RotationX(const r32 a)
 {
     mat4 result = {};
-    result.w = 1.0f;
+    result.ww = 1.0f;
 
     r32 s, c;
     SinCos(a, s, c);
 
     result.xx = 1.0f;
-    result.y.xyz = VEC3(0.0f, c, s);
-    result.z.xyz = VEC3(0.0f, -s, c);
+    result.y.xyz = Vec3(0.0f, c, -s);
+    result.z.xyz = Vec3(0.0f, s, c);
 
     return result;
 }
@@ -777,14 +843,14 @@ inline mat4 Mat4RotationX(const r32 a)
 inline mat4 Mat4RotationY(const r32 a)
 {
     mat4 result = {};
-    result.w = 1.0f;
+    result.ww = 1.0f;
 
     r32 s, c;
     SinCos(a, s, c);
 
-    result.x.xyz = VEC3(c, 0.0f, s);
+    result.x.xyz = Vec3(c, 0.0f, s);
     result.yy = 1.0f;
-    result.z.xyz = VEC3(-s, 0.0f, c);
+    result.z.xyz = Vec3(-s, 0.0f, c);
 
     return result;
 }
@@ -792,13 +858,13 @@ inline mat4 Mat4RotationY(const r32 a)
 inline mat4 Mat4RotationZ(const r32 a)
 {
     mat4 result = {};
-    result.w = 1.0f;
+    result.ww = 1.0f;
 
     r32 s, c;
     SinCos(a, s, c);
 
-    result.x.xyz = VEC3(c, s, 0.0f);
-    result.y.xyz = VEC3(-s, c, 0.0f);
+    result.x.xyz = Vec3(c, s, 0.0f);
+    result.y.xyz = Vec3(-s, c, 0.0f);
     result.zz = 1.0f;
 
     return result;
@@ -808,36 +874,44 @@ inline mat4 Mat4RotationZ(const r32 a)
 inline mat4 Mat4Scaling(const r32 x, const r32 y, const r32 z)
 {
     mat4 result = {};
-    result.w = 1.0f;
+    result.ww = 1.0f;
 
     result.xx = x;
     result.yy = y;
     result.zz = z;
-    result.w = 1.0f;
 
     return result;
 }
 
-inline mat4 Mat4Scaling(const vec3 v)
+inline mat4 Mat4Scaling(const vec3 &v)
 {
     return Mat4Scaling(v.x, v.y, v.z);
 }
 
-inline mat4 Mat4Scaling(const vec4 v)
+inline mat4 Mat4Scaling(const vec4 &v)
 {
     return Mat4Scaling(v.x, v.y, v.z);
 }
 
-inline mat4 Mat4Translation(const vec4 v)
+inline mat4 Mat4Translation(const vec3 &v)
 {
     mat4 result = MAT4_IDENTITY;
-    result.t = v;
+
+    result.tx = v.x;
+    result.ty = v.y;
+    result.tz = v.z;
+
     return result;
+}
+
+inline mat4 Mat4Translation(const vec4 &v)
+{
+    return Mat4Translation(v.xyz);
 }
 
 // NOTE: See Mike Day, Extracting Euler Angles from a Rotation Matrix
 // https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/07/euler-angles1.pdf}
-vec4 GetEulerAngles(const mat4 &m)
+inline vec4 GetEulerAngles(const mat4 &m)
 {
     vec4 result;
 
@@ -852,7 +926,7 @@ vec4 GetEulerAngles(const mat4 &m)
     return result;
 }
 
-void GetAxisAngle(const mat4 &m, vec4 &axis, r32 &angle)
+inline void GetAxisAngle(const mat4 &m, vec4 &axis, r32 &angle)
 {
     r32 trace = m.xx + m.yy + m.zz;
     angle = acosf(0.5f * (trace - 1.0f));
@@ -864,7 +938,7 @@ void GetAxisAngle(const mat4 &m, vec4 &axis, r32 &angle)
     }
     else if(angle < PI - EPSILON)
     {
-        axis = VEC4(m.zy - m.yz, m.xz - m.zx, m.yx - m.xy, 0);
+        axis = Vec4(m.zy - m.yz, m.xz - m.zx, m.yx - m.xy, 0);
         Normalize(axis);
     }
     else
@@ -900,42 +974,46 @@ void GetAxisAngle(const mat4 &m, vec4 &axis, r32 &angle)
     }
 }
 
-quat GetQuaternion(const mat4 &m)
+inline quat GetQuaternion(const mat4 &m)
 {
     quat result;
     r32 trace = 1.0f + m.xx + m.yy + m.zz;
 
     if(trace > EPSILON)
     {
-        r32 s = AASqrt(trace) * 2.0f;
-        result.w = s / 4.0f;
-        result.x = (m.zy - m.yz) / s;
-        result.y = (m.xz - m.zx) / s;
-        result.z = (m.yx - m.xy) / s;
+        r32 s = AASqrt(trace) * 2.0f,
+            oneOverS = 1.0f / s;
+        result.w = s * 0.25f;
+        result.x = (m.zy - m.yz) * s;
+        result.y = (m.xz - m.zx) * s;
+        result.z = (m.yx - m.xy) * s;
     }
     else if(m.xx > m.yy && m.xx > m.zz)
     {
-        r32 s = AASqrt(1.0f + m.xx - m.yy - m.zz) * 2.0f;
-        result.w = (m.zy - m.yz) / s;
-        result.x = s / 4.0f;
-        result.y = (m.yx + m.xy) / s;
-        result.z = (m.xz + m.zx) / s;
+        r32 s = AASqrt(1.0f + m.xx - m.yy - m.zz) * 2.0f,
+            oneOverS = 1.0f / s;
+        result.w = (m.zy - m.yz) * s;
+        result.x = s * 0.25f;
+        result.y = (m.xy + m.yx) * s;
+        result.z = (m.xz + m.zx) * s;
     }
     else if(m.yy > m.zz)
     {
-        r32 s = AASqrt(1.0f + m.yy - m.xx - m.zz) * 2.0f;
-        result.w = (m.xz - m.zx) / s;
-        result.x = (m.yx + m.xy) / s;
-        result.y = s / 4.0f;
-        result.z = (m.zy + m.yz) / s;
+        r32 s = AASqrt(1.0f + m.yy - m.xx - m.zz) * 2.0f,
+            oneOverS = 1.0f / s;
+        result.w = (m.xz - m.zx) * s;
+        result.x = (m.xy + m.yx) * s;
+        result.y = s * 0.25f;
+        result.z = (m.yz + m.zy) * s;
     }
     else
     {
-        r32 s = AASqrt(1.0f + m.zz - m.xx - m.yy) * 2.0f;
-        result.w = (m.yx - m.xy) / s;
-        result.x = (m.xz + m.zx) / s;
-        result.y = (m.zy + m.yz) / s;
-        result.z = s / 4.0f;
+        r32 s = AASqrt(1.0f + m.zz - m.xx - m.yy) * 2.0f,
+            oneOverS = 1.0f / s;
+        result.w = (m.yx - m.xy) * s;
+        result.x = (m.xz + m.zx) * s;
+        result.y = (m.yz + m.zy) * s;
+        result.z = s * 0.25f;
     }
 
     return result;
@@ -943,7 +1021,7 @@ quat GetQuaternion(const mat4 &m)
 
 // NOTE: Left-handed
 /*
-mat4 PerspectiveFOV(r32 fov, r32 aspect, r32 nearDist, r32 farDist)
+inline mat4 PerspectiveFOV(const r32 fov, const r32 aspect, const r32 nearDist, const r32 farDist)
 {
     mat4 result = {};
 
@@ -962,13 +1040,13 @@ mat4 PerspectiveFOV(r32 fov, r32 aspect, r32 nearDist, r32 farDist)
         result.zz = farDist * oneOverDepth;
         result.tz = (-farDist * nearDist) * oneOverDepth;
         result.zw = 1.0f;
-        result.w = 0;
+        result.ww = 0;
     }
 
     return result;
 }
 
-mat4 Perspective(r32 fov, r32 aspect, r32 nearDist, r32 farDist)
+mat4 Perspective(const r32 fov, const r32 aspect, const r32 nearDist, const r32 farDist)
 {
     mat4 result = {};
 
@@ -980,45 +1058,80 @@ mat4 Perspective(r32 fov, r32 aspect, r32 nearDist, r32 farDist)
     result.zz = (-nearDist - farDist) / depth;
     result.tz = 2.0f * farDist * nearDist / depth;
     result.zw = 1.0f;
-    result.w = 0.0f;
+    result.ww = 0.0f;
 
     return result;
 }
 */
 
-// NOTE: OpenGL
-mat4 Perspective(r32 fov, r32 aspect, r32 nearZ, r32 farZ)
+// NOTE: Construct a perspective projection matrix
+//       Vertical FOV in degrees
+inline mat4 Perspective(const r32 fov, const r32 aspect, const r32 nearZ, const r32 farZ)
 {
     mat4 result = {};
 
-    r32 d = 1.0f / tanf(fov / 180.0f * PI * 0.5f);
-    r32 recip = 1.0f / (nearZ - farZ);
+    r32 d = 1.0f / tanf(fov / 360.0f * PI);
+    r32 dist = farZ - nearZ;
+    r32 recip = 1.0f / dist;
 
     result.xx = d / aspect;
     result.yy = d;
     result.zz = (nearZ + farZ) * recip;
+    result.tz = (2.0f * farZ * nearZ) * recip;
     result.zw = -1.0f;
-    result.w = 0.0f;
+    result.ww = 0.0f;
+
+    return result;
+}
+
+inline mat4 Orthographic(const r32 left, const r32 right, const r32 bottom, const r32 top, const r32 near, const r32 far)
+{
+    mat4 result = {};
+
+    r32 width = right - left,
+        height = top - bottom,
+        depth = far - near;
+
+    result.xx = width * 0.5f;
+    result.yy = height * 0.5f;
+    result.zz = -(depth * 0.5f);
+    result.xw = -((right + left) / width);
+    result.yw = -((top + bottom) / height);
+    result.zw = -((far + near) / depth);
+    result.ww = 1.0f;
 
     return result;
 }
 
 // NOTE: Left-handed
-mat4 LookAt(vec4 eye, vec4 at, vec4 up)
+inline mat4 LookAt(const vec4 &eye, const vec4 &at, const vec4 &up)
 {
     mat4 result;
 
-    vec4 z = Normalize(at - eye);
-    vec4 x = Normalize(Cross(up, z));
+    vec4 z = Normalized(at - eye);
+    vec4 x = Normalized(Cross(up, z));
     vec4 y = Cross(z, x);
 
-    result.x = x;
-    result.y = y;
-    result.z = z;
-    result.t = VEC4(Dot(x, -eye), Dot(y, -eye), Dot(z, -eye), 1.0f);
+    result.xx = x.x;
+    result.xy = x.y;
+    result.xz = x.z;
+    result.xw = 0;
 
-    // IMPORTANT: Remove/fix!
-    //return Transpose(result);
+    result.yx = y.x;
+    result.yy = y.y;
+    result.yz = y.z;
+    result.yw = 0;
+
+    result.zx = z.x;
+    result.zy = z.y;
+    result.zz = z.z;
+    result.zw = 0;
+
+    result.tx = Dot(x, -eye);
+    result.ty = Dot(y, -eye);
+    result.tz = Dot(z, -eye);
+    result.ww = 0;
+
     return result;
 }
 

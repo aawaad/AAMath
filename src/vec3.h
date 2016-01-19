@@ -3,7 +3,7 @@
 
 #include "aamath.h"
 
-union vec3
+typedef union _vec3
 {
     struct
     {
@@ -18,9 +18,9 @@ union vec3
         r32 r, g , b;
     };
     r32 E[3];
-};
+} vec3;
 
-inline vec3 VEC3(r32 x, r32 y, r32 z)
+inline vec3 Vec3(r32 x, r32 y, r32 z)
 {
     vec3 result;
 
@@ -228,7 +228,7 @@ inline b32 operator!=(const vec3 &a, const vec3 &b)
 
 inline vec3 Cross(const vec3 &a, const vec3 &b)
 {
-    vec3 result = VEC3(a.y * b.z - a.z * b.y,
+    vec3 result = Vec3(a.y * b.z - a.z * b.y,
                  a.z * b.x - a.x * b.z,
                  a.x * b.y - b.x * a.y);
 
@@ -256,7 +256,7 @@ inline r32 Dot(const vec3 &a, const vec3 &b)
 
 inline vec3 Hadamard(const vec3 &a, const vec3 &b)
 {
-    return VEC3(a.x * b.x, a.y * b.y, a.z * b.z);
+    return Vec3(a.x * b.x, a.y * b.y, a.z * b.z);
 }
 
 inline r32 LengthSq(const vec3 &v)
@@ -269,9 +269,12 @@ inline r32 Length(const vec3 &v)
     return AASqrt(LengthSq(v));
 }
 
-inline vec3 Normalize(const vec3 &v)
+inline vec3 Normalized(const vec3 &v)
 {
     vec3 result;
+
+    Assert(v.x != 0 && v.y != 0 && v.z != 0);
+
     r32 oneOverLength = InvSqrt(LengthSq(v));
 
     result.x = v.x * oneOverLength;
@@ -279,6 +282,15 @@ inline vec3 Normalize(const vec3 &v)
     result.z = v.z * oneOverLength;
 
     return result;
+}
+
+inline void Normalize(vec3 &v)
+{
+    Assert(v.x != 0 && v.y != 0 && v.z != 0);
+
+    r32 oneOverLength = InvSqrt(LengthSq(v));
+
+    v *= oneOverLength;
 }
 
 inline vec3 Reflect(const vec3 &v, const vec3 &n)
@@ -291,7 +303,7 @@ inline vec3 Refract(const vec3 &v, const vec3 &n, r32 idx)
     r32 ndotv = Dot(n, v);
     r32 k = 1.0f - idx * idx * (1.0f - ndotv * ndotv);
     if (k < 0)
-        return VEC3(0, 0, 0);
+        return Vec3(0, 0, 0);
     else
         return idx * v - (idx * ndotv + AASqrt(k)) * n;
 }
@@ -339,7 +351,7 @@ union vec3s
     s32 E[3];
 };
 
-inline vec3s VEC3S(s32 x, s32 y, s32 z)
+inline vec3s Vec3s(s32 x, s32 y, s32 z)
 {
     vec3s result;
 
@@ -539,7 +551,7 @@ inline b32 operator!=(const vec3s &a, const vec3s &b)
 
 inline vec3s Cross(const vec3s &a, const vec3s &b)
 {
-    vec3s result = VEC3S(a.y * b.z - a.z * b.y,
+    vec3s result = Vec3s(a.y * b.z - a.z * b.y,
                      a.z * b.x - a.x * b.z,
                      a.x * b.y - b.x * a.y);
 
@@ -567,7 +579,7 @@ inline s32 Dot(const vec3s &a, const vec3s &b)
 
 inline vec3s Hadamard(const vec3s &a, const vec3s &b)
 {
-    return VEC3S(a.x * b.x, a.y * b.y, a.z * b.z);
+    return Vec3s(a.x * b.x, a.y * b.y, a.z * b.z);
 }
 
 inline s32 LengthSq(const vec3s &v)
@@ -618,7 +630,7 @@ union vec3u
     u32 E[3];
 };
 
-inline vec3u VEC3U(u32 x, u32 y, u32 z)
+inline vec3u Vec3u(u32 x, u32 y, u32 z)
 {
     vec3u result;
 
@@ -812,7 +824,7 @@ inline u32 Dot(const vec3u &a, const vec3u &b)
 
 inline vec3u Hadamard(const vec3u &a, const vec3u &b)
 {
-    return VEC3U(a.x * b.x, a.y * b.y, a.z * b.z);
+    return Vec3u(a.x * b.x, a.y * b.y, a.z * b.z);
 }
 
 inline b32 IsZero(const vec3u &v)

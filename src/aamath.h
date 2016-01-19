@@ -1,8 +1,8 @@
 #ifndef AAMATH_H
 #define AAMATH_H
 
-#include "aatypes.h"
 #include <math.h>
+#include "aatypes.h"
 
 #define EPSILON         1.0e-6f
 #define PI              3.14159265358979323846264338327950288f
@@ -15,6 +15,12 @@
 #define ONEOVERTAU      0.159154943091895335768883763372514362f;
 
 #undef AAMATH_APPROXIMATE
+
+#ifdef AAMATH_DEBUG
+#define Assert(x) if(!(x)) {*(int *)0 = 0;}
+#else
+#define Assert(x)
+#endif
 
 union intfloat
 {
@@ -43,14 +49,6 @@ inline r32 InvSqrt(r32 x)
     intfloat y = {x};
     y.u = 0x5F1FFFF9ul - (y.u >> 1);
     return 0.703952253f * y.f * (2.38924456f - x * y.f * y.f);
-
-//    r32 halfx = 0.5f * x;
-//    int i = *(int*)&x;
-//    i = 0x5f3759df - (i >> 1);
-//    x = *(r32*)&i;
-//    x = x * (1.5f - halfx * x * x);
-//    return x;
-
 #else
     return 1.0f / sqrtf(x);
 #endif
