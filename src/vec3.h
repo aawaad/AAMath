@@ -232,9 +232,9 @@ inline b32 operator!=(const vec3 &a, const vec3 &b)
 
 inline vec3 Cross(const vec3 &a, const vec3 &b)
 {
-    vec3 result = Vec3(a.y * b.z - a.z * b.y,
-                 a.z * b.x - a.x * b.z,
-                 a.x * b.y - b.x * a.y);
+    vec3 result = Vec3(a.y * b.z - b.y * a.z,
+                       a.z * b.x - b.z * a.x,
+                       a.x * b.y - b.x * a.y);
 
     return result;
 }

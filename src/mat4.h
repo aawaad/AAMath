@@ -752,12 +752,19 @@ inline mat4 Mat4RotationRPY(const r32 x, const r32 y, const r32 z)
     result.xx = (cx * cz) + (sx * sy * sz);
     result.xy = (cz * sx * sy) - (cx * sz);
     result.xz = cy * sx;
+    result.xw = 0;
     result.yx = cy * sz;
     result.yy = cy * cz;
     result.yz = -sy;
+    result.yw = 0;
     result.zx = (cx * sy * sz) - (cz * sx);
     result.zy = (cx * cz * sy) + (sx * sz);
     result.zz = cx * cy;
+    result.zw = 0;
+    result.tx = 0;
+    result.ty = 0;
+    result.tz = 0;
+    result.ww = 1.0f;
 
     return result;
 }*/
@@ -851,7 +858,7 @@ inline mat4 Mat4Rotation(const quat &q)
 
 inline mat4 Mat4RotationX(const r32 a)
 {
-    mat4 result = {};
+    mat4 result = MAT4_IDENTITY;
     result.ww = 1.0f;
 
     r32 s, c;
@@ -866,7 +873,7 @@ inline mat4 Mat4RotationX(const r32 a)
 
 inline mat4 Mat4RotationY(const r32 a)
 {
-    mat4 result = {};
+    mat4 result = MAT4_IDENTITY;
     result.ww = 1.0f;
 
     r32 s, c;
@@ -881,7 +888,7 @@ inline mat4 Mat4RotationY(const r32 a)
 
 inline mat4 Mat4RotationZ(const r32 a)
 {
-    mat4 result = {};
+    mat4 result = MAT4_IDENTITY;
     result.ww = 1.0f;
 
     r32 s, c;
@@ -897,7 +904,7 @@ inline mat4 Mat4RotationZ(const r32 a)
 
 inline mat4 Mat4Scaling(const r32 x, const r32 y, const r32 z)
 {
-    mat4 result = {};
+    mat4 result = MAT4_IDENTITY;
     result.ww = 1.0f;
 
     result.xx = x;
@@ -1057,7 +1064,7 @@ inline quat GetQuaternion(const mat4 &m)
 /*
 inline mat4 PerspectiveFOV(const r32 fov, const r32 aspect, const r32 nearDist, const r32 farDist)
 {
-    mat4 result = {};
+    mat4 result = MAT4_IDENTITY;
 
     if(fov <= 0 || aspect == 0)
     {
@@ -1082,7 +1089,7 @@ inline mat4 PerspectiveFOV(const r32 fov, const r32 aspect, const r32 nearDist, 
 
 mat4 Perspective(const r32 fov, const r32 aspect, const r32 nearDist, const r32 farDist)
 {
-    mat4 result = {};
+    mat4 result = MAT4_IDENTITY;
 
     r32 depth = nearDist - farDist;
     r32 tanHalfFOV = tanf(0.5f * fov);
@@ -1098,75 +1105,143 @@ mat4 Perspective(const r32 fov, const r32 aspect, const r32 nearDist, const r32 
 }
 */
 
-// NOTE: Construct a perspective projection matrix
-//       Vertical FOV in degrees
-inline mat4 Perspective(const r32 fov, const r32 aspect, const r32 nearZ, const r32 farZ)
+// NOTE: Vertical FOV in degrees
+inline mat4 PerspectiveLH(const r32 fov, const r32 aspect, const r32 nearZ, const r32 farZ)
 {
-    mat4 result = {};
+    mat4 result = MAT4_IDENTITY;
 
     r32 d = 1.0f / tanf(fov / 360.0f * PI);
-    r32 dist = farZ - nearZ;
-    r32 recip = 1.0f / dist;
 
     result.xx = d / aspect;
     result.yy = d;
-    result.zz = (nearZ + farZ) * recip;
-    result.tz = (2.0f * farZ * nearZ) * recip;
-    result.zw = -1.0f;
+    result.zz = (nearZ + farZ) / (farZ - nearZ);
+    result.tz = -(2.0f * farZ * nearZ) / (farZ - nearZ);
+    result.zw = 1.0f;
     result.ww = 0.0f;
 
     return result;
 }
 
-inline mat4 Orthographic(const r32 left, const r32 right, const r32 bottom, const r32 top, const r32 near, const r32 far)
+// NOTE: Vertical FOV in degrees
+inline mat4 PerspectiveRH(const r32 fov, const r32 aspect, const r32 nearZ, const r32 farZ)
 {
-    mat4 result = {};
+    mat4 result = MAT4_IDENTITY;
+
+    // NOTE: condensed half fov deg -> rad conversion
+    //       fov / 180 * pi / 2 -> fov / 360 * PI
+    r32 d = 1.0f / tanf(fov / 360.0f * PI);
+
+    result.xx = d / aspect;
+    result.yy = d;
+    result.zz = -(farZ + nearZ) / (farZ - nearZ);
+    result.zw = -1.0f;
+    result.tz = -(2.0f * farZ * nearZ) / (farZ - nearZ);
+    result.ww = 0.0f;
+
+    return result;
+}
+
+inline mat4 Perspective(const r32 fov, const r32 aspect, const r32 nearZ, const r32 farZ)
+{
+#ifdef AAMATH_LEFT_HANDED
+    return PerspectiveLH(fov, aspect, nearZ, farZ);
+#else
+    return PerspectiveRH(fov, aspect, nearZ, farZ);
+#endif
+}
+
+inline mat4 Orthographic(const r32 left, const r32 right, const r32 bottom, const r32 top, const r32 nearZ, const r32 farZ)
+{
+    mat4 result = MAT4_IDENTITY;
 
     r32 width = right - left,
         height = top - bottom,
-        depth = far - near;
+        depth = farZ - nearZ;
 
-    result.xx = width * 0.5f;
-    result.yy = height * 0.5f;
-    result.zz = -(depth * 0.5f);
-    result.xw = -((right + left) / width);
-    result.yw = -((top + bottom) / height);
-    result.zw = -((far + near) / depth);
+    result.xx = 2.0f / width;
+    result.yy = 2.0f / height;
+    result.zz = -(2.0f / depth);
+    result.tx = -((right + left) / width);
+    result.ty = -((top + bottom) / height);
+    result.tz = -((farZ + nearZ) / depth);
+
+    return result;
+}
+
+inline mat4 LookAtLH(const vec3 &eye, const vec3 &at, const vec3 &up)
+{
+    mat4 result;
+
+    vec3 z = Normalized(at - eye);
+    vec3 x = Normalized(Cross(up, z));
+    vec3 y = Cross(z, x);
+
+    result.xx = x.x;
+    result.yx = x.y;
+    result.zx = x.z;
+    result.xw = 0;
+
+    result.xy = y.x;
+    result.yy = y.y;
+    result.zy = y.z;
+    result.yw = 0;
+
+    result.xz = z.x;
+    result.yz = z.y;
+    result.zz = z.z;
+    result.zw = 0;
+
+    result.tx = -Dot(x, eye);
+    result.ty = -Dot(y, eye);
+    result.tz = -Dot(z, eye);
     result.ww = 1.0f;
 
     return result;
 }
 
-// NOTE: Left-handed
-inline mat4 LookAt(const vec4 &eye, const vec4 &at, const vec4 &up)
+inline mat4 LookAtRH(const vec3 &eye, const vec3 &at, const vec3 &up)
 {
     mat4 result;
 
-    vec4 z = Normalized(at - eye);
-    vec4 x = Normalized(Cross(up, z));
-    vec4 y = Cross(z, x);
+    vec3 z = Normalized(at - eye);
+    vec3 x = Normalized(Cross(z, up));
+    vec3 y = Cross(x, z);
 
     result.xx = x.x;
-    result.xy = x.y;
-    result.xz = x.z;
+    result.yx = x.y;
+    result.zx = x.z;
     result.xw = 0;
 
-    result.yx = y.x;
+    result.xy = y.x;
     result.yy = y.y;
-    result.yz = y.z;
+    result.zy = y.z;
     result.yw = 0;
 
-    result.zx = z.x;
-    result.zy = z.y;
-    result.zz = z.z;
+    result.xz = -z.x;
+    result.yz = -z.y;
+    result.zz = -z.z;
     result.zw = 0;
 
-    result.tx = Dot(x, -eye);
-    result.ty = Dot(y, -eye);
-    result.tz = Dot(z, -eye);
-    result.ww = 0;
+    result.tx = -Dot(x, eye);
+    result.ty = -Dot(y, eye);
+    result.tz = Dot(z, eye);
+    result.ww = 1.0f;
 
     return result;
+}
+
+inline mat4 LookAt(const vec3 &eye, const vec3 &at, const vec3 &up)
+{
+#ifdef AAMATH_LEFT_HANDED
+    return LookAtLH(eye, at, up);
+#else
+    return LookAtRH(eye, at, up);
+#endif
+}
+
+inline mat4 LookAt(const vec4 &eye, const vec4 &at, const vec4 &up)
+{
+    return LookAt(eye.xyz, at.xyz, up.xyz);
 }
 
 } // NOTE: Namespace
