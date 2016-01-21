@@ -44,15 +44,15 @@
     x   transpose
         
         set:
-    x   translation     NOTE: this probably isn't necessary with unions (e.g. mat.t.xyz = vec3 / mat.t = vec4)
+    x   translation
     x   rotation (quaternion)
     x   rotation (pitch, yaw, roll)
     x   rotation (axis, angle)
     x   rotation (x, y, z separate)
     x   scale
 
-        perspective projection
-        orthogonal
+    x   perspective projection
+    x   orthogonal
 
         get:
     x   to euler angles
@@ -133,6 +133,8 @@
 
 */
 
+using namespace aam;
+
 int main(int argv, char **argc)
 {
     vec2 dim2 = {};
@@ -169,6 +171,14 @@ int main(int argv, char **argc)
     vec3 cross = Cross(x, y);
 
     printf("cross: <%.3f, %.3f, %.3f>\n", cross.x, cross.y, cross.z);
+
+    mat4 t = Mat4Translation(5.0f, 5.0f, 5.0f);
+    mat4 r = Mat4RotationZ(PIOVERFOUR);
+    mat4 s = Mat4Scaling(1.0f, 3.0f, 2.0f);
+    mat4 wrld = t * r * s;
+    mat4 view = LookAt(Vec4(0, 2.0f, 2.0f, 0), VEC4_ORIGIN, VEC4_YAXIS);
+    mat4 pers = Perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
+    mat4 WVP = pers * view * wrld;
 
     y = y + x;
     y = y - x;

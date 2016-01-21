@@ -3,6 +3,9 @@
 
 #include "aamath.h"
 
+namespace aam
+{
+
 typedef union _vec2
 {
     struct
@@ -675,6 +678,8 @@ inline b32 IsZero(const vec2u &v)
 {
     return (v.x == 0 && v.y == 0);
 }
+
+} // NOTE: Namespace
 
 #endif
 

@@ -5,6 +5,9 @@
 #include "vec3.h"
 #include "vec4.h"
 
+namespace aam
+{
+
 typedef union _quat
 {
     struct
@@ -502,6 +505,8 @@ inline void ApproxSlerp(quat &q, const quat &start, r32 t, const quat &end)
         q += (t - 1.0f) * start;
     }
 }
+
+} // NOTE: Namespace
 
 #endif
 

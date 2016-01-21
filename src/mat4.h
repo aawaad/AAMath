@@ -7,37 +7,43 @@
 #include "mat3.h"
 #include "quat.h"
 
-// TODO: #define to switch between row/column major?
+namespace aam
+{
 
-// NOTE: Column vectors, column-major matrices -- T * R * S * v
+// TODO: #define to switch between row/column major?
+//
+//       From what I understand, both OpenGL and DirectX store matrices
+//       in row-major order (i.e, x-axis y-axis z-axis translation w)
+
+// NOTE: Column vectors -- T * R * S * v
 typedef union _mat4
 {
     struct
     {
-        /* NOTE: Row-major
+        // NOTE: Row-major
         r32 xx, xy, xz, xw,
             yx, yy, yz, yw,
             zx, zy, zz, zw,
             tx, ty, tz, ww;
-        */
 
-        // NOTE: Column-major
+        /* NOTE: Column-major
         r32 xx, yx, zx, tx,
             xy, yy, zy, ty,
             xz, yz, zz, tz,
             xw, yw, zw, ww;
+        */
     };
-    /* NOTE: Row-major easy vector accessors
+    // NOTE: Row-major easy vector accessors
     struct
     {
         vec4 x, y, z, t;
     };
-    */
-    // NOTE: Column-major component accessors (e.g. x = Xx, Yx, Zx, Tx);
+    
+    /* NOTE: Column-major component accessors (e.g. x = Xx, Yx, Zx, Tx);
     struct
     {
         vec4 x, y, z, w;
-    };
+    };*/
 
     vec4 v[4];
     r32 m[4][4];
@@ -191,6 +197,11 @@ inline vec4 operator*(const mat4 &m, const vec4 &v)
     return result;
 }
 
+// NOTE: m.xx = a.xx * b.xx + a.xy * b.yx + a.xz * b.zx + a.xw * b.tx
+//       x axis * axis x
+//       y axis * axis y
+//       z axis * axis z
+//       t axis * axis w
 inline mat4 operator*(const mat4 &a, const mat4 &b)
 {
     mat4 result;
@@ -527,7 +538,7 @@ inline void SetRotation(mat4 &m, const vec3 &v, const r32 a)
     SinCos(a, s, c);
     t = 1.0f - c;
 
-    Normalize(v);
+    Normalize((vec3 &)v);
 
     r32 tx = t * v.x, ty = t * v.y, tz = t * v.z,
         sx = s * v.x, sy = s * v.y, sz = s * v.z,
@@ -554,14 +565,27 @@ inline void SetRotation(mat4 &m, vec4 v, const r32 a)
 // NOTE: Set rotation from 3x3 rotation matrix
 inline void SetRotation(mat4 &m, const mat3 &r)
 {
-    m.x.xyz = r.x;
+    m.xx = r.xx;
+    m.xy = r.xy;
+    m.xz = r.xz;
+    m.xw = 0;
+
+    m.yx = r.yx;
+    m.yy = r.yy;
+    m.yz = r.yz;
+    m.yw = 0;
+
+    m.zx = r.zx;
+    m.zy = r.zy;
+    m.zz = r.zz;
+    m.zw = 0;
+
+    /*
     m.tx = 0;
-    m.y.xyz = r.y;
     m.ty = 0;
-    m.z.xyz = r.z;
     m.tz = 0;
-    m.w.xyz = {};
-    m.ww = 0;
+    m.ww = 1.0f;
+    */
 }
 
 // NOTE: Set rotation from quaternion
@@ -747,7 +771,7 @@ inline mat4 Mat4Rotation(const vec4 &v, const r32 a)
     SinCos(a, s, c);
     t = 1.0f - c;
 
-    Normalize(v);
+    Normalize((vec4 &)v);
 
     r32 tx = t * v.x, ty = t * v.y, tz = t * v.z,
         sx = s * v.x, sy = s * v.y, sz = s * v.z,
@@ -893,24 +917,34 @@ inline mat4 Mat4Scaling(const vec4 &v)
     return Mat4Scaling(v.x, v.y, v.z);
 }
 
-inline mat4 Mat4Translation(const vec3 &v)
+inline mat4 Mat4Scaling(const r32 s)
+{
+    return Mat4Scaling(s, s, s);
+}
+
+inline mat4 Mat4Translation(const r32 x, const r32 y, const r32 z)
 {
     mat4 result = MAT4_IDENTITY;
 
-    result.tx = v.x;
-    result.ty = v.y;
-    result.tz = v.z;
+    result.tx = x;
+    result.ty = y;
+    result.tz = z;
 
     return result;
 }
 
+inline mat4 Mat4Translation(const vec3 &v)
+{
+    return Mat4Translation(v.x, v.y, v.z);
+}
+
 inline mat4 Mat4Translation(const vec4 &v)
 {
-    return Mat4Translation(v.xyz);
+    return Mat4Translation(v.x, v.y, v.z);
 }
 
 // NOTE: See Mike Day, Extracting Euler Angles from a Rotation Matrix
-// https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/07/euler-angles1.pdf}
+// https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/07/euler-angles1.pdf
 inline vec4 GetEulerAngles(const mat4 &m)
 {
     vec4 result;
@@ -1134,6 +1168,8 @@ inline mat4 LookAt(const vec4 &eye, const vec4 &at, const vec4 &up)
 
     return result;
 }
+
+} // NOTE: Namespace
 
 #endif
 

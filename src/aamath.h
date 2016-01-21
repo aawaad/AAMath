@@ -4,6 +4,9 @@
 #include <math.h>
 #include "aatypes.h"
 
+namespace aam
+{
+
 #define EPSILON         1.0e-6f
 #define PI              3.14159265358979323846264338327950288f
 #define PIOVERTWO       1.57079632679489661923132169163975144f
@@ -71,6 +74,8 @@ inline void SinCos(r32 angle, r32 &a, r32 &b)
     a = sinf(angle);
     b = cosf(angle);
 }
+
+} // NOTE: Namespace
 
 #include "vec2.h"
 #include "vec3.h"

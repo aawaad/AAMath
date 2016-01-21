@@ -3,6 +3,9 @@
 
 #include "aamath.h"
 
+namespace aam
+{
+
 typedef union _vec3
 {
     struct
@@ -39,6 +42,7 @@ static const vec3 VEC3_XAXIS = {1.0f, 0, 0};
 static const vec3 VEC3_YAXIS = {0, 1.0f, 0};
 static const vec3 VEC3_ZAXIS = {0, 0, 1.0f};
 static const vec3 VEC3_ORIGIN = {0, 0, 0};
+static const vec3 VEC3_ZERO = {0, 0, 0};
 
 //
 // NOTE: Operators
@@ -831,6 +835,8 @@ inline b32 IsZero(const vec3u &v)
 {
     return ((v.x == 0) && (v.y == 0) && (v.z == 0));
 }
+
+} // NOTE: Namespace
 
 #endif
 

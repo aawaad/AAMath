@@ -5,6 +5,9 @@
 #include "vec3.h"
 #include "quat.h"
 
+namespace aam
+{
+
 // NOTE: Column vectors, column-major matrices
 typedef union _mat3
 {
@@ -165,6 +168,10 @@ inline vec3 operator*(const mat3 &m, const vec3 &v)
     return result;
 }
 
+// NOTE: m.xx = a.xx * b.xx + a.xy * b.yx + a.xz * b.zx
+//       x axis * axis x
+//       y axis * axis y
+//       z axis * axis z
 inline mat3 operator*(const mat3 &a, const mat3 &b)
 {
     mat3 result;
@@ -561,7 +568,7 @@ inline mat3 Mat3Rotation(const vec3 &v, const r32 a)
     SinCos(a, s, c);
     t = 1.0f - c;
 
-    Normalize(v);
+    Normalize((vec3 &)v);
 
     r32 tx = t * v.x, ty = t * v.y, tz = t * v.z,
         sx = s * v.x, sy = s * v.y, sz = s * v.z,
@@ -783,6 +790,8 @@ inline quat GetQuaternion(const mat3 &m)
 
     return result;
 }
+
+} // NOTE: Namespace
 
 #endif
 

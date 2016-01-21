@@ -4,6 +4,9 @@
 #include "aamath.h"
 #include "vec3.h"
 
+namespace aam
+{
+
 typedef union _vec4
 {
     struct
@@ -57,6 +60,7 @@ static const vec4 VEC4_XAXIS = {1.0f, 0.0f, 0.0f, 0.0f};
 static const vec4 VEC4_YAXIS = {0.0f, 1.0f, 0.0f, 0.0f};
 static const vec4 VEC4_ZAXIS = {0.0f, 0.0f, 1.0f, 0.0f};
 static const vec4 VEC4_ORIGIN = {0.0f, 0.0f, 0.0f, 1.0f};
+static const vec4 VEC4_ZERO = {0.0f, 0.0f, 0.0f, 0.0f};
 
 //
 // NOTE: Operators
@@ -903,6 +907,8 @@ inline b32 IsZero(const vec4u &v)
 {
     return ((v.x == 0) && (v.y == 0) && (v.z == 0));
 }
+
+} // NOTE: Namespace
 
 #endif
 

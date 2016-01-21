@@ -4,5 +4,5 @@ REM cl %1
 
 IF NOT EXIST build mkdir build
 pushd build
-cl -Oi -EHa- -WX -W4 -wd4201 -wd4100 -wd4189 /FC /Z7 ..\src\main.cpp
+cl -Oi -EHa- -WX -W4 -wd4201 -wd4100 -wd4189 /FC /Z7 /nologo ..\src\main.cpp
 popd
