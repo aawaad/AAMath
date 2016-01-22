@@ -52,7 +52,11 @@
     x   scale
 
     x   perspective projection
+     x   LH
+     x   RH
     x   orthogonal
+     x   LH
+     x   RH
 
         get:
     x   to euler angles
@@ -83,8 +87,16 @@
         operators
 
         transform
-        distance
-        closest points
+    x   distance
+     x   line point
+     x   line seg point
+     x   line line
+     x   line seg line seg
+    x   closest points
+     x   line point
+     x   line seg point
+     x   line line
+     x   line seg line seg
 
     Rays:
         ray2, ray3
@@ -92,8 +104,14 @@
         operators
         
         transform
-        ditance
-        closest points
+    x   distance
+     x   ray point
+     x   ray ray
+     x   ray line
+    x   closest points
+     x   ray point
+     x   ray ray
+     x   ray line
 
     Triangles:
         point in triangle
@@ -102,30 +120,38 @@
         triangle-ray intersection
 
     Planes:
-        transform
-        distance
-        closest point
-        plane test
+    x   transform
+    x   distance
+    x   closest point
+    x   plane test
+     x   plane point
+     x   plane sphere
+     x   plane AABB
 
     Common:
     x   constants (pi, tau/2pi, halfpi, epsilon etc) 
         
         abs
         ceil
+    x   clamp
         floor
     x   areequal
     x   iszero
         isinf
-        isnan
+    x   isnan
         min
         max
         round
         lerp
 
     Collision:
-        AABB
+    x   AABB
+     x   AABB AABB
+     x   AABB ray
         OBB
-        Bounding spheres
+    x   Bounding spheres
+     x   sphere sphere
+     x   sphere ray
         Capsules
 
     SIMD optimisations?

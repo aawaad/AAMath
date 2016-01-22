@@ -1,6 +1,8 @@
 #ifndef AAMATH_H
 #define AAMATH_H
 
+#include <float.h>
+#include <limits.h>
 #include <math.h>
 #include "aatypes.h"
 
@@ -75,6 +77,45 @@ inline void SinCos(r32 angle, r32 &a, r32 &b)
     b = cosf(angle);
 }
 
+inline r32 Clamp(r32 x, r32 min, r32 max)
+{
+    r32 result = x;
+    Assert(min < max);
+
+    if(x < min)
+        result = min;
+    else if(x > max)
+        result = max;
+
+    return result;
+}
+
+inline r32 Clamp01(r32 x)
+{
+    return Clamp(x, 0.0f, 1.0f);
+}
+
+inline b32 IsNaN(r32 x)
+{
+    //return !(x == x);
+    return ((*(u32*)&x) & 0x7fffffff) > 0x7f800000;
+}
+
+inline r32 Lerp(r32 t, r32 a, r32 b)
+{
+    return (1 - t) * a + t * b;
+}
+
+inline r32 Min(r32 a, r32 b)
+{
+    return (a < b) ? a : b;
+}
+
+inline r32 Max(r32 a, r32 b)
+{
+    return (a > b) ? a : b;
+}
+
 } // NOTE: Namespace
 
 #include "vec2.h"
@@ -83,6 +124,7 @@ inline void SinCos(r32 angle, r32 &a, r32 &b)
 #include "mat3.h"
 #include "mat4.h"
 #include "quat.h"
+#include "collision.h"
 
 #endif
 

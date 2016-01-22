@@ -8,21 +8,21 @@
 namespace aam
 {
 
-// NOTE: Column vectors, column-major matrices
+// NOTE: Column vectors -- T * R * S * v
 typedef union _mat3
 {
     struct
     {
-        /* NOTE: row-major
+        // NOTE: row-major
         r32 xx, xy, xz,
             yx, yy, yz,
             zx, zy, zz;
-        */
 
-        // NOTE: Column-major
+        /* NOTE: Column-major
         r32 xx, yx, zx,
             xy, yy, zy,
             xz, yz, zz;
+        */
     };
     
     struct
@@ -100,17 +100,6 @@ inline mat3 operator-(const mat3 &a, const r32 &b)
     return result;
 }
 
-/*inline mat3 operator-(const r32 &b, const mat3 &a)
-{
-    mat3 result;
-
-    result.v[0] = a.v[0] - b.v[0];
-    result.v[1] = a.v[1] - b.v[1];
-    result.v[2] = a.v[2] - b.v[2];
-
-    return result;
-}*/
-
 inline mat3 operator-(const mat3 &a, const mat3 &b)
 {
     mat3 result;
@@ -133,30 +122,6 @@ inline mat3 operator*(const mat3 &a, const r32 &b)
     return result;
 }
 
-/*inline mat3 operator*(const r32 &b, const mat3 &a)
-{
-    mat3 result;
-
-    result.x = a.x * b;
-    result.y = a.y * b;
-    result.z = a.z * b;
-
-    return result;
-}*/
-
-/* NOTE: row vector * matrix
-inline vec3 operator*(const vec3 &a, const mat3 &b)
-{
-    vec3 result;
-
-    result.x = a.x * b.xx + a.y * b.yx + a.z * b.zx;
-    result.y = a.x * b.xy + a.y * b.yy + a.z * b.zy;
-    result.z = a.x * b.xz + a.y * b.yz + a.z * b.zz;
-
-    return result;
-}*/
-
-// NOTE: matrix * column vector
 inline vec3 operator*(const mat3 &m, const vec3 &v)
 {
     vec3 result;
@@ -168,25 +133,29 @@ inline vec3 operator*(const mat3 &m, const vec3 &v)
     return result;
 }
 
-// NOTE: m.xx = a.xx * b.xx + a.xy * b.yx + a.xz * b.zx
-//       x axis * axis x
-//       y axis * axis y
-//       z axis * axis z
+// NOTE: Component * basis
+//       e.g. [each basis]'s X * each [X basis] component
+//
+//       A X.x Y.x Z.x  *  B X.x X.y X.z
+//
+//       This is visually transposed for us because we're
+//       storing the basis vectors row-major (because C),
+//       rather than vertically as in mathematical texts!
 inline mat3 operator*(const mat3 &a, const mat3 &b)
 {
     mat3 result;
 
-    result.m[0][0] = a.m[0][0] * b.m[0][0] + a.m[0][1] * b.m[1][0] + a.m[0][2] * b.m[2][0];
-    result.m[0][1] = a.m[0][0] * b.m[0][1] + a.m[0][1] * b.m[1][1] + a.m[0][2] * b.m[2][1];
-    result.m[0][2] = a.m[0][0] * b.m[0][2] + a.m[0][1] * b.m[1][2] + a.m[0][2] * b.m[2][2];
+    result.xx = a.xx * b.xx + a.yx * b.xy + a.zx * b.xz;
+    result.xy = a.xy * b.xx + a.yy * b.xy + a.zy * b.xz;
+    result.xz = a.xz * b.xx + a.yz * b.xy + a.zz * b.xz;
 
-    result.m[1][0] = a.m[1][0] * b.m[0][0] + a.m[1][1] * b.m[1][0] + a.m[1][2] * b.m[2][0];
-    result.m[1][1] = a.m[1][0] * b.m[0][1] + a.m[1][1] * b.m[1][1] + a.m[1][2] * b.m[2][1];
-    result.m[1][2] = a.m[1][0] * b.m[0][2] + a.m[1][1] * b.m[1][2] + a.m[1][2] * b.m[2][2];
+    result.yx = a.xx * b.yx + a.yx * b.yy + a.zx * b.yz;
+    result.yy = a.xy * b.yx + a.yy * b.yy + a.zy * b.yz;
+    result.yz = a.xz * b.yx + a.yz * b.yy + a.zz * b.yz;
 
-    result.m[2][0] = a.m[2][0] * b.m[0][0] + a.m[2][1] * b.m[1][0] + a.m[2][2] * b.m[2][0];
-    result.m[2][1] = a.m[2][0] * b.m[0][1] + a.m[2][1] * b.m[1][1] + a.m[2][2] * b.m[2][1];
-    result.m[2][2] = a.m[2][0] * b.m[0][2] + a.m[2][1] * b.m[1][2] + a.m[2][2] * b.m[2][2];
+    result.zx = a.xx * b.zx + a.yx * b.zy + a.zx * b.zz;
+    result.zy = a.xy * b.zx + a.yy * b.zy + a.zy * b.zz;
+    result.zz = a.xz * b.zx + a.yz * b.zy + a.zz * b.zz;
 
     return result;
 }
@@ -203,17 +172,6 @@ inline mat3 operator/(const mat3 &a, const r32 &b)
 
     return result;
 }
-
-/*inline mat3 operator/(const r32 &b, const mat3 &a)
-{
-    mat3 result;
-
-    result.x = a.x / b;
-    result.y = a.y / b;
-    result.z = a.z / b;
-
-    return result;
-}*/
 
 inline mat3 &operator+=(mat3 &a, const r32 &b)
 {
@@ -259,14 +217,6 @@ inline mat3 &operator*=(mat3 &a, const r32 &b)
 
     return a;
 }
-
-/* NOTE: row vector *= matrix
-inline vec3 &operator*=(vec3 &a, const mat3 &b)
-{
-    a = a * b;
-
-    return a;
-}*/
 
 inline mat3 &operator*=(mat3 &a, const mat3 &b)
 {

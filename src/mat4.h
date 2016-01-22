@@ -86,18 +86,6 @@ inline mat4 operator+(const mat4 &a, const r32 &b)
     return result;
 }
 
-/*inline mat4 operator+(const r32 &b, const mat4 &a)
-{
-    mat4 result;
-
-    result.v[0] = a.v[0] + b;
-    result.v[1] = a.v[1] + b;
-    result.v[2] = a.v[2] + b;
-    result.v[3] = a.v[3] + b;
-
-    return result;
-}*/
-
 inline mat4 operator+(const mat4 &a, const mat4 &b)
 {
     mat4 result;
@@ -122,18 +110,6 @@ inline mat4 operator-(const mat4 &a, const r32 &b)
     return result;
 }
 
-/*inline mat4 operator-(const r32 &b, const mat4 &a)
-{
-    mat4 result;
-
-    result.v[0] = a.v[0] - b.v[0];
-    result.v[1] = a.v[1] - b.v[1];
-    result.v[2] = a.v[2] - b.v[2];
-    result.v[3] = a.v[3] - b.v[3];
-
-    return result;
-}*/
-
 inline mat4 operator-(const mat4 &a, const mat4 &b)
 {
     mat4 result;
@@ -157,18 +133,6 @@ inline mat4 operator*(const mat4 &a, const r32 &b)
 
     return result;
 }
-
-/*inline mat4 operator*(const r32 &b, const mat4 &a)
-{
-    mat4 result;
-
-    result.v[0] = a.v[0] * b;
-    result.v[1] = a.v[1] * b;
-    result.v[2] = a.v[2] * b;
-    result.v[3] = a.v[3] * b;
-
-    return result;
-}*/
 
 /* NOTE: row vector * matrix
 inline vec4 operator*(const vec4 &v, const mat4 &m)
@@ -197,15 +161,18 @@ inline vec4 operator*(const mat4 &m, const vec4 &v)
     return result;
 }
 
-// NOTE: m.xx = a.xx * b.xx + a.xy * b.yx + a.xz * b.zx + a.xw * b.tx
-//       x axis * axis x
-//       y axis * axis y
-//       z axis * axis z
-//       t axis * axis w
+// NOTE: Component * basis
+//       e.g. [each basis]'s X * each [X basis] component
+//
+//       A X.x Y.x Z.x  *  B X.x X.y X.z
+//
+//       This is visually transposed for us because we're
+//       storing the basis vectors row-major (because C),
+//       rather than vertically as in mathematical texts!
 inline mat4 operator*(const mat4 &a, const mat4 &b)
 {
     mat4 result;
-
+/*
     for(int i = 0; i < 4; ++i)
     {
         for(int j = 0; j < 4; ++j)
@@ -217,6 +184,27 @@ inline mat4 operator*(const mat4 &a, const mat4 &b)
             }
         }
     }
+*/
+
+    result.xx = a.xx * b.xx + a.yx * b.xy + a.zx * b.xz + a.tx * b.xw;
+    result.xy = a.xy * b.xx + a.yy * b.xy + a.zy * b.xz + a.ty * b.xw;
+    result.xz = a.xz * b.xx + a.yz * b.xy + a.zz * b.xz + a.tz * b.xw;
+    result.xw = a.xw * b.xx + a.yw * b.xy + a.zw * b.xz + a.ww * b.xw;
+
+    result.yx = a.xx * b.yx + a.yx * b.yy + a.zx * b.yz + a.tx * b.yw;
+    result.yy = a.xy * b.yx + a.yy * b.yy + a.zy * b.yz + a.ty * b.yw;
+    result.yz = a.xz * b.yx + a.yz * b.yy + a.zz * b.yz + a.tz * b.yw;
+    result.yw = a.xw * b.yx + a.yw * b.yy + a.zw * b.yz + a.ww * b.yw;
+
+    result.zx = a.xx * b.zx + a.yx * b.zy + a.zx * b.zz + a.tx * b.zw;
+    result.zy = a.xy * b.zx + a.yy * b.zy + a.zy * b.zz + a.ty * b.zw;
+    result.zz = a.xz * b.zx + a.yz * b.zy + a.zz * b.zz + a.tz * b.zw;
+    result.zw = a.xw * b.zx + a.yw * b.zy + a.zw * b.zz + a.ww * b.zw;
+
+    result.tx = a.xx * b.tx + a.yx * b.ty + a.zx * b.tz + a.tx * b.ww;
+    result.ty = a.xy * b.tx + a.yy * b.ty + a.zy * b.tz + a.ty * b.ww;
+    result.tz = a.xz * b.tx + a.yz * b.ty + a.zz * b.tz + a.tz * b.ww;
+    result.ww = a.xw * b.tx + a.yw * b.ty + a.zw * b.tz + a.ww * b.ww;
 
     return result;
 }
@@ -1059,51 +1047,6 @@ inline quat GetQuaternion(const mat4 &m)
 
     return result;
 }
-
-// NOTE: Left-handed
-/*
-inline mat4 PerspectiveFOV(const r32 fov, const r32 aspect, const r32 nearDist, const r32 farDist)
-{
-    mat4 result = MAT4_IDENTITY;
-
-    if(fov <= 0 || aspect == 0)
-    {
-        // NOTE: Assert
-        result = MAT4_IDENTITY;
-    }
-    else
-    {
-        r32 depth = farDist - nearDist;
-        r32 oneOverDepth = 1.0f / depth;
-
-        result.yy = 1.0f / tanf(0.5f * fov);
-        result.xx = result.yy / aspect;
-        result.zz = farDist * oneOverDepth;
-        result.tz = (-farDist * nearDist) * oneOverDepth;
-        result.zw = 1.0f;
-        result.ww = 0;
-    }
-
-    return result;
-}
-
-mat4 Perspective(const r32 fov, const r32 aspect, const r32 nearDist, const r32 farDist)
-{
-    mat4 result = MAT4_IDENTITY;
-
-    r32 depth = nearDist - farDist;
-    r32 tanHalfFOV = tanf(0.5f * fov);
-
-    result.xx = 1.0f / (tanHalfFOV * aspect);
-    result.yy = 1.0f / tanHalfFOV;
-    result.zz = (-nearDist - farDist) / depth;
-    result.tz = 2.0f * farDist * nearDist / depth;
-    result.zw = 1.0f;
-    result.ww = 0.0f;
-
-    return result;
-}
-*/
 
 // NOTE: Vertical FOV in degrees
 inline mat4 PerspectiveLH(const r32 fov, const r32 aspect, const r32 nearZ, const r32 farZ)
