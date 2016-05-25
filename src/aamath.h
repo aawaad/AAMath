@@ -22,9 +22,9 @@ namespace aam
 #undef AAMATH_APPROXIMATE
 
 #ifdef AAMATH_DEBUG
-#define Assert(x) if(!(x)) {*(int *)0 = 0;}
+#define AAM_Assert(x) if(!(x)) {*(int *)0 = 0;}
 #else
-#define Assert(x)
+#define AAM_Assert(x)
 #endif
 
 union intfloat
@@ -80,7 +80,7 @@ inline void SinCos(r32 angle, r32 &a, r32 &b)
 inline r32 Clamp(r32 x, r32 min, r32 max)
 {
     r32 result = x;
-    Assert(min < max);
+    AAM_Assert(min < max);
 
     if(x < min)
         result = min;

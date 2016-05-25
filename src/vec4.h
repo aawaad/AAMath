@@ -308,7 +308,7 @@ inline vec4 Normalized(const vec4 &v)
 {
     vec4 result;
 
-    Assert(v.x != 0 && v.y != 0 && v.z != 0 && v.w != 0);
+    AAM_Assert(v.x != 0 || v.y != 0 || v.z != 0 || v.w != 0);
 
     r32 oneOverLength = InvSqrt(LengthSq(v));
 
@@ -322,7 +322,7 @@ inline vec4 Normalized(const vec4 &v)
 
 inline void Normalize(vec4 &v)
 {
-    Assert(v.x != 0 && v.y != 0 && v.z != 0 && v.w != 0);
+    AAM_Assert(v.x != 0 || v.y != 0 || v.z != 0 || v.w != 0);
 
     r32 oneOverLength = InvSqrt(LengthSq(v));
 

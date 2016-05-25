@@ -83,7 +83,7 @@ inline r32 DistanceSqN(const line3 &line, const vec3 &point)
 {
     r32 result;
 
-    Assert(AreEqual(Length(line.direction), 1.0f));
+    AAM_Assert(AreEqual(Length(line.direction), 1.0f));
 
     vec3 w = point - line.origin;
     r32 wSq = LengthSq(w);
@@ -490,7 +490,7 @@ inline plane Plane(const r32 a, const r32 b, const r32 c, const r32 d)
     plane result;
 
     r32 lenSq = a*a + b*b + c*c;
-    Assert(!IsZero(lenSq));
+    AAM_Assert(!IsZero(lenSq));
 
     if(IsZero(lenSq))
     {
@@ -516,7 +516,7 @@ inline plane Plane(const vec3 &a, const vec3 &b, const vec3 &c)
          w = Cross(u, v);
 
     r32 lenSq = LengthSq(w);
-    Assert(!IsZero(lenSq));
+    AAM_Assert(!IsZero(lenSq));
 
     if(IsZero(lenSq))
     {
@@ -577,7 +577,7 @@ inline plane Transform(const plane &p, const r32 scale, const quat &rotation, co
 inline sphere BoundingSphere(const vec3 *vertices, const u32 count)
 {
     sphere result;
-    Assert(vertices);
+    AAM_Assert(vertices);
 
     vec3 min = {},
          max = {};
@@ -683,7 +683,7 @@ inline aabb AABB(const vec3 &min, const vec3& max)
 inline aabb AABB(const vec3 *vertices, const u32 count)
 {
     aabb result;
-    Assert(vertices);
+    AAM_Assert(vertices);
 
     result.min = vertices[0];
     result.max = vertices[0];

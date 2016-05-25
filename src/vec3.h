@@ -277,7 +277,7 @@ inline vec3 Normalized(const vec3 &v)
 {
     vec3 result;
 
-    Assert(v.x != 0 && v.y != 0 && v.z != 0);
+    AAM_Assert(v.x != 0 || v.y != 0 || v.z != 0);
 
     r32 oneOverLength = InvSqrt(LengthSq(v));
 
@@ -290,7 +290,7 @@ inline vec3 Normalized(const vec3 &v)
 
 inline void Normalize(vec3 &v)
 {
-    Assert(v.x != 0 && v.y != 0 && v.z != 0);
+    AAM_Assert(v.x != 0 || v.y != 0 || v.z != 0);
 
     r32 oneOverLength = InvSqrt(LengthSq(v));
 

@@ -463,7 +463,7 @@ inline mat4 Inverse(const mat4 &m)
     else
     {
         // NOTE: Singular matrix
-        Assert(false)
+        AAM_Assert(false)
         result = MAT4_IDENTITY;
     }
 
